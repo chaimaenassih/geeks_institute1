@@ -72,7 +72,7 @@ avg_words_per_sentence = num_words / num_sentences if num_sentences > 0 else 0
 num_non_unique_words = num_words - num_unique_words
 
 print("Paragraphe analysé :\n", paragraph)
-print("\n📊 Statistiques :")
+print("\n Statistiques :")
 print(f"Nombre de caractères : {num_chars}")
 print(f"Nombre de phrases : {num_sentences}")
 print(f"Nombre de mots : {num_words}")
