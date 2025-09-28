@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Not Found{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <h1 class="display-6 mb-3">404 — Page not found</h1>
+  <p class="text-muted mb-4">{{ message or "The page you’re looking for doesn’t exist." }}</p>
+  <a class="btn btn-primary" href="{{ url_for('vehicles.index') }}">Back to Inventory</a>
+</div>
+{% endblock %}

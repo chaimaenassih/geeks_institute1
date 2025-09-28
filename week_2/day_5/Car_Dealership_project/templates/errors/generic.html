@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Error {{ status }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <h1 class="display-6 mb-3">{{ status }} — {{ message or "Request could not be completed." }}</h1>
+  <a class="btn btn-outline-primary" href="{{ url_for('vehicles.index') }}">Back to Inventory</a>
+</div>
+{% endblock %}

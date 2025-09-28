@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Add Salesperson{% endblock %}
+
+{% block content %}
+  <div class="max-w-lg mx-auto">
+    <h1 class="text-2xl font-semibold mb-4">Add Salesperson</h1>
+    <form method="post" class="bg-white border rounded-xl shadow-sm p-5 space-y-4">
+      <div>
+        <label class="block text-sm font-medium mb-1" for="name">Name</label>
+        <input id="name" name="name" required maxlength="100" value="{{ name or '' }}"
+               class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand">
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" for="email">Email</label>
+        <input id="email" name="email" type="email" required maxlength="120" value="{{ email or '' }}"
+               class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand">
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" for="phone">Phone (optional)</label>
+        <input id="phone" name="phone" maxlength="30" value="{{ phone or '' }}"
+               class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand">
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" for="photo_url">Photo URL (optional)</label>
+        <input id="photo_url" name="photo_url" type="url" placeholder="https://example.com/avatar.jpg"
+               value="{{ photo_url or '' }}"
+               class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand">
+      </div>
+      <div class="flex justify-end gap-2">
+        <a href="{{ url_for('salespeople.index') }}" class="px-3 py-2 rounded-md border text-sm hover:bg-gray-50">Cancel</a>
+        <button class="px-3 py-2 rounded-md bg-brand hover:bg-brand-dark text-white text-sm">Save</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

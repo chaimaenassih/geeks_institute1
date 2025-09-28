@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Add Vehicle{% endblock %}
+
+{% block content %}
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-semibold mb-4">Add Vehicle</h1>
+
+    <form method="post" class="bg-white border rounded-xl shadow-sm p-5 space-y-4">
+      <input type="hidden" name="next" value="{{ next_url or request.args.get('next') }}">
+
+      <div>
+        <label for="vin" class="block text-sm font-medium mb-1">VIN (17 chars)</label>
+        <input id="vin" name="vin" required minlength="17" maxlength="17"
+               class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand" />
+      </div>
+      <div>
+        <label for="make" class="block text-sm font-medium mb-1">Make</label>
+        <input id="make" name="make" required
+               class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand" />
+      </div>
+      <div>
+        <label for="model" class="block text-sm font-medium mb-1">Model</label>
+        <input id="model" name="model" required
+               class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand" />
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="year" class="block text-sm font-medium mb-1">Year</label>
+          <input type="number" id="year" name="year" required min="1900" max="2100"
+                 class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand" />
+        </div>
+        <div>
+          <label for="price" class="block text-sm font-medium mb-1">Price</label>
+          <input type="number" step="0.01" min="0" id="price" name="price" required
+                 class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand" />
+        </div>
+      </div>
+      <div>
+        <label for="color" class="block text-sm font-medium mb-1">Color (Optional)</label>
+        <input id="color" name="color"
+               class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand" />
+      </div>
+      <div>
+        <label for="photo_url" class="block text-sm font-medium mb-1">Photo URL (Optional)</label>
+        <input type="url" id="photo_url" name="photo_url"
+               class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand" />
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <a href="{{ next_url or request.args.get('next') or url_for('vehicles.index') }}"
+           class="px-3 py-2 rounded-md border text-sm hover:bg-gray-50">Cancel</a>
+        <button class="px-3 py-2 rounded-md bg-brand hover:bg-brand-dark text-white text-sm">Create</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

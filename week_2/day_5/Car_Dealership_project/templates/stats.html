@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}Statistics & Analytics{% endblock %}
+
+{% block content %}
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold">Statistics & Analytics</h1>
+    <p class="text-sm text-gray-500">Live inventory insights with Chart.js</p>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white border rounded-xl shadow-sm p-4">
+      <div class="text-sm text-gray-500">Total Vehicles</div>
+      <div class="text-3xl font-extrabold text-brand mt-1">{{ total_vehicles }}</div>
+    </div>
+    <div class="bg-white border rounded-xl shadow-sm p-4">
+      <div class="text-sm text-gray-500">Inventory Value (DH)</div>
+      <div class="text-3xl font-extrabold text-emerald-600 mt-1">
+        {{ "{:,.2f}".format(inventory_value) }}
+      </div>
+    </div>
+
+    <div class="bg-white border rounded-xl shadow-sm p-4">
+      <div class="text-sm text-gray-500">Most Expensive</div>
+      {% if most_expensive %}
+        <div class="mt-1 font-semibold">
+          {{ most_expensive.year }} {{ most_expensive.make }} {{ most_expensive.model }}
+        </div>
+        <div class="text-emerald-600 font-bold">
+          {{ "{:,.2f}".format(most_expensive.price) }} DH
+        </div>
+        <a href="{{ url_for('vehicles.details', vehicle_id=most_expensive.id) }}"
+           class="text-brand text-sm hover:underline">View</a>
+      {% else %}
+        <div class="mt-1 text-gray-500">—</div>
+      {% endif %}
+    </div>
+
+    <div class="bg-white border rounded-xl shadow-sm p-4">
+      <div class="text-sm text-gray-500">Least Expensive</div>
+      {% if least_expensive %}
+        <div class="mt-1 font-semibold">
+          {{ least_expensive.year }} {{ least_expensive.make }} {{ least_expensive.model }}
+        </div>
+        <div class="text-emerald-600 font-bold">
+          {{ "{:,.2f}".format(least_expensive.price) }} DH
+        </div>
+        <a href="{{ url_for('vehicles.details', vehicle_id=least_expensive.id) }}"
+           class="text-brand text-sm hover:underline">View</a>
+      {% else %}
+        <div class="mt-1 text-gray-500">—</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Charts grid -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <!-- Bar: Vehicles by Make -->
+    <div class="bg-white border rounded-xl shadow-sm p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold">Vehicles by Make</h2>
+      </div>
+      <div class="h-72">
+        <canvas id="chartByMake"></canvas>
+      </div>
+    </div>
+
+    <!-- Line: Vehicles by Year -->
+    <div class="bg-white border rounded-xl shadow-sm p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold">Vehicles by Year</h2>
+      </div>
+      <div class="h-72">
+        <canvas id="chartByYear"></canvas>
+      </div>
+    </div>
+
+    <!-- Doughnut: Price Buckets -->
+    <div class="bg-white border rounded-xl shadow-sm p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold">Price Buckets</h2>
+      </div>
+      <div class="h-72">
+        <canvas id="chartBuckets"></canvas>
+      </div>
+    </div>
+
+    <!-- Bar: Average Price by Make (full width) -->
+    <div class="bg-white border rounded-xl shadow-sm p-4 xl:col-span-3">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold">Average Price by Make</h2>
+      </div>
+      <div class="h-80">
+        <canvas id="chartAvgPrice"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backend data as JSON (safe defaults avoid syntax errors) -->
+  <script id="stats-json" type="application/json">
+  {
+    "labelsMake":    {{ labels_make     | default([], true) | tojson }},
+    "countsMake":    {{ counts_make     | default([], true) | tojson }},
+    "labelsYear":    {{ labels_year     | default([], true) | tojson }},
+    "countsYear":    {{ counts_year     | default([], true) | tojson }},
+    "bucketLabels":  {{ bucket_labels   | default([], true) | tojson }},
+    "bucketCounts":  {{ bucket_counts   | default([], true) | tojson }},
+    "labelsAvgMake": {{ labels_avg_make | default([], true) | tojson }},
+    "valuesAvgMake": {{ values_avg_make | default([], true) | tojson }}
+  }
+  </script>
+
+  <!-- Libraries (order matters) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="{{ url_for('static', filename='js/chart.js') }}" defer></script>
+{% endblock %}
