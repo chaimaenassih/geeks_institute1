@@ -2,3 +2,7 @@
 .env
 .env.*
 *.env
+# secrets
+.env
+.env.*
+*.env
