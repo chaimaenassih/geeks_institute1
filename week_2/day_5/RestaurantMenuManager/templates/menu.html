@@ -1,0 +1,143 @@
+{% extends "basic.html" %}
+{% block title %}Menu · 2025{% endblock %}
+
+{% set current = category or 'main' %}
+{% set view = request.args.get('view','grid') %}
+{% set sort = request.args.get('sort','') %}
+
+{% block header_actions %}
+  <a href="{{ url_for('add_item') }}?category={{ current }}"
+     class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-700 focus-ring">
+    + Add Item
+  </a>
+{% endblock %}
+
+{% block content %}
+  <!-- Category tabs -->
+  <div class="mb-4 flex flex-wrap items-center gap-2">
+    {% for slug, label in CATEGORIES %}
+      <a href="{{ url_for('menu_by_category', category=slug, view=view, sort=sort) }}"
+         class="px-3 py-1.5 rounded-lg text-sm border focus-ring {{ 'bg-brand-600 text-white border-brand-600' if current==slug else 'border-slate-300/70 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800' }}">
+        {{ label }}
+      </a>
+    {% endfor %}
+    <div class="ml-auto flex items-center gap-2">
+      <!-- View toggle -->
+      <div class="inline-flex rounded-lg border border-slate-300/70 dark:border-slate-700 overflow-hidden">
+        <a href="{{ url_for('menu_by_category', category=current, view='grid', sort=sort) }}"
+           class="px-3 py-1.5 text-sm {{ 'bg-slate-900 text-white dark:bg-white/10' if view=='grid' else 'hover:bg-slate-100 dark:hover:bg-slate-800' }}">Grid</a>
+        <a href="{{ url_for('menu_by_category', category=current, view='table', sort=sort) }}"
+           class="px-3 py-1.5 text-sm {{ 'bg-slate-900 text-white dark:bg-white/10' if view=='table' else 'hover:bg-slate-100 dark:hover:bg-slate-800' }}">Table</a>
+      </div>
+
+      <!-- Search -->
+      <input id="q" type="search" placeholder="Search dishes…"
+             class="rounded-lg border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-sm focus-ring"
+             oninput="filterList(this.value)">
+    </div>
+  </div>
+
+  {% if items %}
+    {% if view == 'grid' %}
+      <!-- CREATIVE GRID -->
+      <div id="cards" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {% for it in items %}
+        <div class="group rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-900 hover:shadow-xl transition"
+             data-name="{{ it.name|lower }}">
+          <div class="relative">
+            <img src="{{ it.image_url or 'https://via.placeholder.com/640x400?text=Dish' }}"
+                 alt="{{ it.name|e }}"
+                 onerror="this.src='https://via.placeholder.com/640x400?text=Dish';"
+                 class="h-44 w-full object-cover group-hover:scale-[1.02] transition">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/0 via-black/0 to-black/10 group-hover:to-black/20"></div>
+            <div class="absolute top-3 right-3 text-xs font-medium px-2.5 py-1.5 rounded-full bg-white/90 dark:bg-slate-900/70 border border-slate-200/70 dark:border-slate-700 backdrop-blur">
+              DH {{ '%.2f'|format(it.price) }}
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="text-base font-semibold tracking-tight">{{ it.name }}</h3>
+            <div class="mt-3 flex items-center gap-2">
+              <a href="{{ url_for('update_item', item_id=it.id) }}"
+                 class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300/70 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 focus-ring">
+                Edit
+              </a>
+              <form method="post" action="{{ url_for('delete_item', item_id=it.id) }}" class="inline"
+                    onsubmit="return confirm('Delete {{ it.name|e }}?');">
+                <button type="submit"
+                        class="inline-flex items-center px-3 py-1.5 rounded-lg border border-rose-300/70 text-rose-700 hover:bg-rose-50 dark:text-rose-200 dark:border-rose-800 dark:hover:bg-rose-900/30 focus-ring">
+                  Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <!-- TABLE VIEW (classic) -->
+      <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+        <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
+          <thead class="bg-slate-50/60 dark:bg-slate-900/40">
+            <tr class="text-left text-sm text-slate-500">
+              <th class="px-4 py-3 w-24">Image</th>
+              <th class="px-4 py-3">Name</th>
+              <th class="px-4 py-3 w-40">Price (DH)</th>
+              <th class="px-4 py-3 w-56">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableRows" class="divide-y divide-slate-200 dark:divide-slate-800 text-sm">
+            {% for it in items %}
+            <tr data-name="{{ it.name|lower }}" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
+              <td class="px-4 py-3">
+                <img src="{{ it.image_url or 'https://via.placeholder.com/80x60?text=Dish' }}"
+                     alt="{{ it.name|e }}"
+                     onerror="this.src='https://via.placeholder.com/80x60?text=Dish';"
+                     class="h-12 w-16 rounded-lg object-cover border border-slate-200 dark:border-slate-800" />
+              </td>
+              <td class="px-4 py-3 font-medium text-slate-700 dark:text-slate-200">{{ it.name }}</td>
+              <td class="px-4 py-3">DH {{ '%.2f'|format(it.price) }}</td>
+              <td class="px-4 py-3">
+                <a href="{{ url_for('update_item', item_id=it.id) }}"
+                   class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300/70 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 mr-2 focus-ring">Edit</a>
+                <form method="post" action="{{ url_for('delete_item', item_id=it.id) }}" class="inline"
+                      onsubmit="return confirm('Delete {{ it.name|e }}?');">
+                  <button type="submit"
+                          class="inline-flex items-center px-3 py-1.5 rounded-lg border border-rose-300/70 text-rose-700 hover:bg-rose-50 dark:text-rose-200 dark:border-rose-800 dark:hover:bg-rose-900/30 focus-ring">
+                    Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  {% else %}
+    <!-- Empty state -->
+    <div class="text-center py-10">
+      <div class="mx-auto mb-3 h-12 w-12 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600"></div>
+      <h2 class="text-lg font-semibold">No items in this category</h2>
+      <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">Add your first dish to get started.</p>
+      <a href="{{ url_for('add_item') }}?category={{ current }}"
+         class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-700 focus-ring">
+        + Add Item
+      </a>
+    </div>
+  {% endif %}
+
+  <script>
+    // Simple client-side filter for both views
+    function filterList(q) {
+      q = (q || "").toLowerCase();
+      // grid cards
+      document.querySelectorAll('#cards [data-name]')?.forEach(el => {
+        el.style.display = el.dataset.name.includes(q) ? "" : "none";
+      });
+      // table rows
+      document.querySelectorAll('#tableRows [data-name]')?.forEach(el => {
+        el.style.display = el.dataset.name.includes(q) ? "" : "none";
+      });
+    }
+  </script>
+{% endblock %}
