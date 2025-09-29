@@ -1,12 +1,14 @@
-# 🚗 **Dealership Pro** — Flask Inventory & Sales
+ **🚗 Dealership Pro** 
 
-Manage a car dealership’s inventory with **CRUD**, **search**, **pagination**, and a sleek **Stats dashboard (Chart.js)**.  
-Optional flows include **Sales**, **Customers**, and **Salespeople** (with soft-archive).  
-UI: **Tailwind CSS (CDN)** · Charts: **Chart.js (CDN)** · DB: **PostgreSQL** via `psycopg2`.
+ Dealership Pro is a Flask web app for managing a car dealership’s inventory—full CRUD, search, pagination, and image-ready vehicle cards.
 
 ---
+## ▶️ Project Video
+https://youtu.be/a0pUHrdOlvM
+---
 
-## 📚 Table of Contents
+
+ 📚 Table of Contents
 
 - [Requirements](#-requirements)
 - [Quickstart](#-quickstart)
@@ -18,17 +20,17 @@ UI: **Tailwind CSS (CDN)** · Charts: **Chart.js (CDN)** · DB: **PostgreSQL** v
 - [Database Setup (PostgreSQL)](#-database-setup-postgresql)
 - [Run the App](#-run-the-app)
 
----
 
-## ✅ Requirements
+
+✅ Requirements
 
 - **Python** 3.10+
 - **PostgreSQL** 13+ (local or remote)
 - **pip** & **venv**
 
----
 
-## ⚡ Quickstart
+
+ ⚡ Quickstart
 
 ```bash
 # 1) clone and cd
@@ -105,8 +107,6 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-*No local setup needed for Tailwind/Chart.js—they’re loaded via CDN in templates.*
-
 ---
 
 ## 🔐 Environment Variables
@@ -118,15 +118,12 @@ Create a **`.env`** file in the project root.
 SECRET_KEY=change-me-to-a-long-random-string
 ```
 
-**Database config — choose ONE style that matches your `database/index.py`:**
+**Database config — choose ONE style that matches with `database/index.py`:**
 
-**A) DSN URL (recommended)**
+**DSN URL (recommended)**
 ```env
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dealership
 ```
-
-**B) Separate variables**  
-> Use names your connector expects. Common patterns:
 
 **Postgres-style:**
 ```env
