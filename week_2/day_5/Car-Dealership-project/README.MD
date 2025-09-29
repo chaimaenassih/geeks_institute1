@@ -7,7 +7,6 @@
 https://youtu.be/a0pUHrdOlvM
 ---
 
-
  📚 Table of Contents
 
 - [Requirements](#-requirements)
