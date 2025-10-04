@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>Daily challenge: Not Bad</title>
+<body>
+<script>
+// 1) Ta phrase (tu peux la changer pour tester)
+let sentence = "The movie is not that bad, I like it";
+
+// 2) Positions de la première occurrence de "not" et "bad"
+const wordNot = sentence.indexOf("not");
+const wordBad = sentence.indexOf("bad");
+
+// 3) Si "bad" vient après "not" -> remplacer "not...bad" par "good"
+let result = sentence;
+if (wordNot !== -1 && wordBad !== -1 && wordBad > wordNot) {
+  result = sentence.slice(0, wordNot) + "good" + sentence.slice(wordBad + 3);
+}
+
+// 4) Afficher
+console.log("Your string is :", `'${sentence}'`);
+console.log("--> the result is :", `'${result}'`);
+</script>
+</body>
+</html>
