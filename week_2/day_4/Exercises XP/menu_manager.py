@@ -3,6 +3,7 @@ import os
 import psycopg2
 from menu_item import MenuItem
 
+
 try:
     from dotenv import load_dotenv
     load_dotenv()

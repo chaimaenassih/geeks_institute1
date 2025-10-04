@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import psycopg2
 
+# Optionnel : charger un fichier .env si présent
 try:
     from dotenv import load_dotenv
     load_dotenv()
