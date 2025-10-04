@@ -1,25 +1,30 @@
-# menu_manager.py
 from __future__ import annotations
 import os
 import psycopg2
 from menu_item import MenuItem
 
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    pass
+
 def _get_connection():
+    pwd = os.getenv("PGPASSWORD")
+    if not pwd:
+        raise RuntimeError("PGPASSWORD is not set (use environment var or .env)")
     return psycopg2.connect(
         host=os.getenv("PGHOST", "127.0.0.1"),
         port=os.getenv("PGPORT", "5432"),
         dbname=os.getenv("PGDATABASE", "restaurant"),
         user=os.getenv("PGUSER", "postgres"),
-        password=os.getenv("PGPASSWORD", "zineb07"),
+        password=pwd,
     )
-
-
 
 class MenuManager:
     @classmethod
     def get_by_name(cls, name: str) -> MenuItem | None:
-        """Retourne un item par nom, ou None s'il n'existe pas."""
         sql = '''
             SELECT item_id, item_name, item_price
             FROM public."Menu_Items"
@@ -37,7 +42,6 @@ class MenuManager:
 
     @classmethod
     def all_items(cls) -> list[MenuItem]:
-        """Retourne tous les items."""
         sql = 'SELECT item_id, item_name, item_price FROM public."Menu_Items" ORDER BY item_id;'
         items: list[MenuItem] = []
         with _get_connection() as conn, conn.cursor() as cur:
@@ -46,7 +50,6 @@ class MenuManager:
                 items.append(MenuItem(item_name, int(item_price), item_id=item_id))
         return items
 
-    # Alias pour coller au codebox de l'énoncé
     @classmethod
     def all(cls) -> list[MenuItem]:
         return cls.all_items()

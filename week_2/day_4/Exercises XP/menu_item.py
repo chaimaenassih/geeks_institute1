@@ -1,23 +1,43 @@
-# menu_item.py
 from __future__ import annotations
+
 import os
 import psycopg2
 
+# Optionnel : charger un fichier .env si présent
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    pass
+
+
 def _get_connection():
+    """Connexion PostgreSQL via variables d'environnement (PG*)."""
+    pwd = os.getenv("PGPASSWORD")
+    if not pwd:
+        raise RuntimeError("PGPASSWORD is not set (use .env or env vars)")
     return psycopg2.connect(
         host=os.getenv("PGHOST", "127.0.0.1"),
         port=os.getenv("PGPORT", "5432"),
         dbname=os.getenv("PGDATABASE", "restaurant"),
         user=os.getenv("PGUSER", "postgres"),
-        password=os.getenv("PGPASSWORD", "zineb07"),
+        password=pwd,
     )
+
+
+def _to_smallint(value: int | float | str) -> int:
+    """Contraint value à la plage SMALLINT (0..32767)."""
+    v = int(float(value))
+    if v < 0: v = 0
+    if v > 32767: v = 32767
+    return v
 
 
 class MenuItem:
     """Représente un item du menu."""
     def __init__(self, name: str, price: int, item_id: int | None = None):
         self.name = name
-        self.price = int(price)   # SMALLINT
+        self.price = _to_smallint(price)
         self.item_id = item_id
 
     def save(self) -> bool:
@@ -61,7 +81,7 @@ class MenuItem:
             params.append(new_name)
         if new_price is not None:
             sets.append("item_price = %s")
-            params.append(int(new_price))
+            params.append(_to_smallint(new_price))
         set_clause = ", ".join(sets)
 
         with _get_connection() as conn, conn.cursor() as cur:
@@ -92,5 +112,5 @@ class MenuItem:
             if new_name is not None:
                 self.name = new_name
             if new_price is not None:
-                self.price = int(new_price)
+                self.price = _to_smallint(new_price)
         return ok
