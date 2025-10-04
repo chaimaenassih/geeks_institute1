@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8" />
+<title>Exercises XP — minimal</title>
+<body>
+
+<!-- Exercise 5 : Users (HTML fourni) -->
+<div id="container">Users:</div>
+<ul class="list" id="list1">
+  <li>John</li>
+  <li>Pete</li>
+</ul>
+<ul class="list" id="list2">
+  <li>David</li>
+  <li>Sarah</li>
+  <li>Dan</li>
+</ul>
+
+<!-- Exercise 6 : Navbar (HTML fourni) -->
+<div id="navBar">
+  <ul id="menu">
+    <li><a href="#">Profile</a></li>
+    <li><a href="#">Home</a></li>
+    <li><a href="#">My Friends</a></li>
+    <li><a href="#">Messenger</a></li>
+    <li><a href="#">My Pics</a></li>
+  </ul>
+</div>
+
+<!-- Exercise 7 : My Book List -->
+<section class="listBooks"></section>
+
+<script>
+// ================================
+// Exercise 1 : Divisible by 23
+// ================================
+function displayNumbersDivisible() {
+  let sum = 0;
+  let line = [];
+  for (let i = 0; i <= 500; i++) {
+    if (i % 23 === 0) {
+      console.log(i);
+      line.push(i);
+      sum += i;
+    }
+  }
+  console.log("Sum :", sum);
+}
+displayNumbersDivisible();
+
+// =========================
+// Exercise 2 : Shopping
+// =========================
+const stock = { 
+  banana: 6, 
+  apple: 0,
+  pear: 12,
+  orange: 32,
+  blueberry: 1
+};  
+
+const prices = {    
+  banana: 4, 
+  apple: 2, 
+  pear: 1,
+  orange: 1.5,
+  blueberry: 10
+}; 
+
+const shoppingList = ["banana", "orange", "apple"];
+
+function myBill() {
+  let total = 0;
+  for (const item of shoppingList) {
+    if (item in stock && stock[item] > 0) {
+      total += prices[item];
+      
+    }
+  }
+  return total;
+}
+console.log("Total bill:", myBill());
+
+// ==============================================
+//  Exercise 3 : What’s in my wallet ?
+// ==============================================
+function changeEnough(itemPrice, amountOfChange) {
+  const [quarters, dimes, nickels, pennies] = amountOfChange;
+  const total = quarters*0.25 + dimes*0.10 + nickels*0.05 + pennies*0.01;
+  return total >= itemPrice;
+}
+
+console.log(changeEnough(14.11, [2,100,0,0])); // false
+console.log(changeEnough(0.75, [0,0,20,5]));   // true
+console.log(changeEnough(4.25, [25,20,5,0]));  // true
+
+// =================================
+// Exercise 4 : Vacations Costs
+// =================================
+function hotelCost() {
+  const pricePerNight = 140;
+  let nights;
+  do {
+    const ans = prompt("How many nights at the hotel?");
+    if (ans === null) return 0;
+    nights = Number(ans);
+  } while (!Number.isFinite(nights) || nights < 0);
+  return nights * pricePerNight;
+}
+
+function planeRideCost() {
+  let dest = "";
+  do {
+    const ans = prompt("Destination?");
+    if (ans === null) return 0;
+    dest = String(ans).trim();
+  } while (!dest);
+  const d = dest.toLowerCase();
+  if (d === "london") return 183;
+  if (d === "paris")  return 220;
+  return 300;
+}
+
+function rentalCarCost() {
+  const perDay = 40;
+  let days;
+  do {
+    const ans = prompt("How many days to rent the car?");
+    if (ans === null) return 0;
+    days = Number(ans);
+  } while (!Number.isFinite(days) || days < 0);
+  let cost = days * perDay;
+  if (days > 10) cost *= 0.95; // 5% discount
+  return cost;
+}
+
+function totalVacationCost() {
+  const hotel = hotelCost();
+  const plane = planeRideCost();
+  const car   = rentalCarCost();
+  const msg = `The car cost: $${car}, the hotel cost: $${hotel}, the plane tickets cost: $${plane}.`;
+  console.log(msg);
+  alert(msg);
+  return hotel + plane + car;
+}
+
+
+// ================================
+//  Exercise 5 : Users (DOM)
+// ================================
+const containerDiv = document.getElementById('container');
+console.log(containerDiv);
+
+document.querySelector('#list1 li:nth-child(2)').textContent = "Richard";
+
+document.querySelector('#list2 li:nth-child(2)').remove();
+
+document.querySelectorAll('ul.list li:first-child').forEach(li => li.textContent = "Chaimae");
+
+document.querySelectorAll('ul.list').forEach(ul => ul.classList.add('student_list'));
+
+document.getElementById('list1').classList.add('university', 'attendance');
+
+containerDiv.style.backgroundColor = "lightblue";
+containerDiv.style.padding = "10px";
+
+document.querySelectorAll('li').forEach(li => {
+  if (li.textContent.trim() === "Dan") li.style.display = "none";
+});
+
+
+document.querySelectorAll('li').forEach(li => {
+  if (li.textContent.trim() === "Richard") li.style.border = "1px solid black";
+});
+
+document.body.style.fontSize = "16px";
+
+
+// ====================================
+//  Exercise 6 : Change the navbar
+// ====================================
+document.getElementById('navBar').setAttribute('id', 'socialNetworkNavigation');
+
+const ul = document.getElementById('menu');
+const li = document.createElement('li');
+li.appendChild(document.createTextNode('Logout'));
+ul.appendChild(li);
+
+console.log(ul.firstElementChild.textContent);
+console.log(ul.lastElementChild.textContent);
+
+// ================================
+//  Exercise 7 : My Book List
+// ================================
+const allBooks = [
+  { title: "Eloquent JavaScript", author: "Marijn Haverbeke", image: "https://covers.openlibrary.org/b/id/10523354-L.jpg", alreadyRead: true },
+  { title: "You Don't Know JS Yet", author: "Kyle Simpson", image: "https://covers.openlibrary.org/b/id/10594763-L.jpg", alreadyRead: false }
+];
+
+const listSection = document.querySelector('.listBooks');
+allBooks.forEach(book => {
+  const div = document.createElement('div');
+  const img = document.createElement('img');
+  img.src = book.image;
+  img.style.width = "100px";
+
+  const txt = document.createElement('p');
+  txt.textContent = `${book.title} written by ${book.author}`;
+  if (book.alreadyRead) txt.style.color = "red";
+
+  div.appendChild(img);
+  div.appendChild(txt);
+  listSection.appendChild(div);
+});
+</script>
+</body>
+</html>
