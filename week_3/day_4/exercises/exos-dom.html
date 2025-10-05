@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>DOM – Exercises 1 to 4</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --ink:#0f172a;
+      --muted:#475569;
+      --card:#ffffff;
+      --accent:#4f46e5;
+      --border:#e5e7eb;
+      --bg:#f7f8ff;
+    }
+    html,body{height:100%}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Noto Sans",sans-serif;
+      color:var(--ink); background:var(--bg);
+      padding:24px; display:flex; justify-content:center;
+    }
+    .container{
+      width:min(960px,95vw); background:var(--card); border:1px solid var(--border);
+      border-radius:16px; padding:20px; box-shadow:0 10px 30px rgba(2,6,23,.06);
+    }
+    h1,h2,h3{ margin:0 0 8px 0 }
+    section{ padding:16px; border:1px dashed var(--border); border-radius:12px; margin:14px 0 }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px;
+      border:none; border-radius:10px; background:var(--accent); color:#fff;
+      padding:8px 12px; cursor:pointer; font-weight:600;
+    }
+    .btn.secondary{ background:#11182710; color:var(--ink); border:1px solid var(--border) }
+    .hint{ color:var(--muted); font-size:12px; margin-top:6px }
+    .mb8{ margin-bottom:8px }
+  
+    .fade-out{
+      animation: fade 600ms forwards ease;
+    }
+    @keyframes fade{
+      from { opacity:1 }
+      to   { opacity:0 }
+    }
+    /* Small layout for lists in ex.2 */
+    ul.usersAnswer{ margin-top:10px }
+    ul.usersAnswer li{ padding:4px 8px; background:#f2f4ff; border:1px solid var(--border); border-radius:8px; margin:4px 0 }
+
+    #MyForm label, #MyForm input{ display:block }
+    #MyForm input{ padding:6px 8px; border:1px solid var(--border); border-radius:8px }
+    code{ background:#f5f5f5; padding:2px 6px; border-radius:6px }
+  </style>
+</head>
+<body>
+  <main class="container">
+
+    <!-- ───────────────────────────── Exercise 1 ───────────────────────────── -->
+    <section id="ex1">
+      <h2>Exercise 1 : Change the article</h2>
+
+      <article id="article">
+        <h1 id="factsTitle"> Some Facts </h1>
+        <h2 id="chocoTitle"> The Chocolate </h2>
+        <h3 id="historyTitle"> History of the chocolate </h3>
+        <p> Chocolate is made from tropical Theobroma cacao tree seeds.
+          Its earliest use dates back to the Olmec civilization in Mesoamerica.</p>
+        <p id="p2"> After the European discovery of the Americas, chocolate became
+          very popular in the wider world, and its demand exploded. </p>
+        <p> Chocolate has since become a popular food product that millions enjoy every day,
+          thanks to its unique, rich, and sweet taste.</p>
+        <p> But what effect does eating chocolate have on our health?</p>
+      </article>
+
+      <div class="mb8">
+        <button id="boldAll" class="btn">Make all paragraphs bold</button>
+        <span class="hint">Clique pour mettre tous les &lt;p&gt; en gras.</span>
+      </div>
+
+      <div class="hint">
+        Ouvre la console pour voir les <em>console.log</em> demandés.
+      </div>
+    </section>
+
+    <!-- ───────────────────────────── Exercise 2 ───────────────────────────── -->
+    <section id="ex2">
+      <h2>🌟 Exercise 2 : Work with forms</h2>
+
+      <form id="nameForm" class="mb8">
+        <label for="fname">First name:</label>
+        <input type="text" id="fname" name="firstname" />
+        <label for="lname">Last name:</label>
+        <input type="text" id="lname" name="lastname" />
+        <br />
+        <input type="submit" value="Submit" id="submitForm" class="btn" />
+      </form>
+      <ul class="usersAnswer" id="answers"></ul>
+
+      <p class="hint">Les éléments du formulaire et leurs valeurs sont également affichés dans la console.</p>
+    </section>
+
+    <!-- ───────────────────────────── Exercise 3 ───────────────────────────── -->
+    <section id="ex3">
+      <h2>🌟 Exercise 3 : Transform the sentence</h2>
+
+      <p id="boldParagraph"><strong>Hello</strong> I hope you are enjoying <strong>this</strong> class. At the
+        <strong>end</strong> you <strong>will</strong> be great Developers!
+        <strong>Enjoy</strong> the <strong>JavaScript </strong> lessons</p>
+
+      <p class="hint">Survole le paragraphe pour passer les mots en <strong>bleu</strong>, puis quitte-le pour revenir en noir.</p>
+    </section>
+
+    <!-- ───────────────────────────── Exercise 4 ───────────────────────────── -->
+    <section id="ex4">
+      <h2>🌟 Exercise 4 : Volume of a sphere</h2>
+
+      <p>Input radius value and get the volume of a sphere.</p>
+      <form id="MyForm">
+        <label for="radius">Radius</label>
+        <input type="text" name="radius" id="radius" required />
+        <label for="volume">Volume</label>
+        <input type="text" name="volume" id="volume" readonly />
+        <br />
+        <input type="submit" value="Calculate" id="submit" class="btn" />
+      </form>
+      <p class="hint">Formule utilisée : <code>V = 4/3 × π × r³</code></p>
+    </section>
+
+  </main>
+
+  <script>
+    /* ───────────────────────────── Exercise 1 logic ───────────────────────────── */
+
+    const h1 = document.querySelector('#article h1');
+    console.log('Exercise 1 — h1:', h1);
+
+    const article = document.getElementById('article');
+    const lastP = article.querySelector('p:last-of-type');
+    if (lastP) lastP.remove();
+
+    const h2 = document.getElementById('chocoTitle');
+    h2.addEventListener('click', () => {
+      h2.style.backgroundColor = 'red';
+      h2.style.color = 'white';
+    });
+
+    const h3 = document.getElementById('historyTitle');
+    h3.addEventListener('click', () => {
+      h3.style.display = 'none';
+    });
+
+    document.getElementById('boldAll').addEventListener('click', () => {
+      article.querySelectorAll('p').forEach(p => p.style.fontWeight = '700');
+    });
+
+    h1.addEventListener('mouseenter', () => {
+      const size = Math.floor(Math.random() * 101);
+      h1.style.fontSize = size + 'px';
+    });
+    h1.addEventListener('mouseleave', () => {
+      h1.style.fontSize = '';
+    });
+
+    const secondP = document.getElementById('p2');
+    if (secondP) {
+      secondP.addEventListener('mouseenter', () => {
+        secondP.classList.add('fade-out');
+      });
+      
+      secondP.addEventListener('animationend', () => {
+        secondP.classList.remove('fade-out');
+        secondP.style.opacity = 0; 
+      });
+    }
+
+    /* ───────────────────────────── Exercise 2 logic ───────────────────────────── */
+
+    const form = document.getElementById('nameForm');
+    console.log('Exercise 2 — form:', form);
+
+    const inputFName = document.getElementById('fname');
+    const inputLName = document.getElementById('lname');
+    console.log('Exercise 2 — inputs by id:', inputFName, inputLName);
+
+    const byNameFirst = document.querySelector('input[name="firstname"]');
+    const byNameLast = document.querySelector('input[name="lastname"]');
+    console.log('Exercise 2 — inputs by name:', byNameFirst, byNameLast);
+
+    const answersUL = document.getElementById('answers');
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault(); 
+
+      const first = inputFName.value.trim();
+      const last = inputLName.value.trim();
+
+      if (!first || !last) {
+        alert('Please fill both first and last name.');
+        return;
+      }
+
+      answersUL.innerHTML = '';
+
+      const li1 = document.createElement('li');
+      li1.textContent = first;
+      const li2 = document.createElement('li');
+      li2.textContent = last;
+      answersUL.appendChild(li1);
+      answersUL.appendChild(li2);
+
+      console.log('Exercise 2 — submitted:', { first, last });
+      form.reset();
+    });
+
+    /* ───────────────────────────── Exercise 3 logic ───────────────────────────── */
+
+
+    let allBoldItems = [];
+
+
+    function getBoldItems() {
+      const paragraph = document.getElementById('boldParagraph');
+      allBoldItems = Array.from(paragraph.querySelectorAll('strong'));
+    }
+
+    function highlight() {
+      allBoldItems.forEach(el => el.style.color = 'blue');
+    }
+
+    function returnItemsToDefault() {
+      allBoldItems.forEach(el => el.style.color = 'black');
+    }
+
+    // Setup once
+    getBoldItems();
+    const boldPara = document.getElementById('boldParagraph');
+    boldPara.addEventListener('mouseover', highlight);
+    boldPara.addEventListener('mouseout', returnItemsToDefault);
+
+    /* ───────────────────────────── Exercise 4 logic ───────────────────────────── */
+
+    const sphereForm = document.getElementById('MyForm');
+    const rInput = document.getElementById('radius');
+    const vInput = document.getElementById('volume');
+
+    sphereForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const r = parseFloat(rInput.value);
+
+      if (Number.isNaN(r) || r < 0) {
+        alert('Please enter a valid, non-negative radius.');
+        vInput.value = '';
+        return;
+      }
+      const V = (4/3) * Math.PI * Math.pow(r, 3);
+      vInput.value = V.toFixed(4); 
+    });
+  </script>
+</body>
+</html>
