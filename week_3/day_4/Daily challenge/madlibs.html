@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Challenge: Mad Libs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- évite l’erreur 404 favicon -->
+  <link rel="icon" href="data:,">
+  <style>
+    /* ====== Palette & base ====== */
+    :root{
+      --bg: #eef2ff;            /* Indigo 50 (fond de page doux) */
+      --card: #ffffff;          /* carte */
+      --ink: #0f172a;           /* texte principal */
+      --muted: #475569;         /* texte secondaire */
+      --border: #e5e7eb;        /* bordures légères */
+      --primary: #4f46e5;       /* indigo 600 */
+      --primary-2: #4338ca;     /* indigo 700 */
+      --accent: #f472b6;        /* rose accent */
+      --danger: #ef4444;        /* rouge erreur */
+      --chip: #f5f3ff;          /* violet très clair */
+    }
+    html,body{height:100%}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Noto Sans",sans-serif;
+      color:var(--ink); background:var(--bg);
+      display:flex; justify-content:center; padding:24px;
+    }
+
+    /* ====== Carte & header ====== */
+    .wrap{
+      width:min(760px,94vw); background:var(--card); border:1px solid var(--border);
+      border-radius:20px; overflow:hidden; box-shadow:0 16px 40px rgba(2,6,23,.10);
+    }
+    .hero{
+      background: radial-gradient(1200px 120px at 20% -40%, #a78bfa33, transparent),
+                  linear-gradient(90deg, #eef2ff, #fdf4ff);
+      padding:22px 24px; border-bottom:1px solid var(--border);
+      display:flex; align-items:center; gap:12px;
+    }
+    .logo{
+      width:42px;height:42px;border-radius:50%;
+      display:grid;place-items:center;color:#fff;background:var(--primary);font-weight:800;
+      box-shadow:0 6px 20px rgba(79,70,229,.35);
+    }
+    h1{ margin:0;font-size:24px }
+    .subtitle{ color:var(--muted); font-size:13px }
+
+    /* ====== Form ====== */
+    .pad{ padding:18px 20px 36px } /* <-- plus d’espace en bas */
+    form label{ display:block; margin-top:10px; color:var(--muted) }
+    form input{
+      width:100%; padding:12px; margin-top:6px;
+      border:1px solid var(--border); border-radius:12px; background:#fff; color:var(--ink);
+      font-size:16px; outline:none; transition:border-color .15s, box-shadow .15s;
+    }
+    form input:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 4px color-mix(in srgb, var(--primary) 20%, transparent);
+    }
+    .row{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap }
+    .btn{
+      border:none; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer;
+      transition:transform .02s ease, background .15s ease, box-shadow .2s ease;
+    }
+    .btn.primary{ background:var(--primary); color:#fff; box-shadow:0 8px 24px rgba(79,70,229,.35) }
+    .btn.primary:hover{ background:var(--primary-2) }
+    .btn.secondary{ background:#ffffff; color:var(--ink); border:1px solid var(--border) }
+    .btn.secondary:disabled{ opacity:.5; cursor:not-allowed }
+    .tag{
+      display:inline-flex; align-items:center; gap:6px; padding:6px 10px; margin-top:8px;
+      background:var(--chip); border:1px solid var(--border); border-radius:999px; color:var(--muted); font-size:12px;
+    }
+    .error{ border-color:var(--danger)!important; box-shadow:0 0 0 4px color-mix(in srgb, var(--danger) 18%, transparent)!important }
+
+    /* ====== Story output (cadre bien tracé + marges) ====== */
+    .story{
+      margin:16px 6px 28px;                 /* espace autour, surtout en bas */
+      padding:18px;
+      background:#fff;
+      border:2px solid color-mix(in srgb, var(--primary) 75%, #0000);
+      border-radius:16px;
+      box-shadow:0 2px 0 rgba(79,70,229,.20), 0 10px 24px rgba(2,6,23,.06);
+      min-height:54px;
+    }
+
+    .note{ color:var(--muted); font-size:12px; margin:12px 0 0 0 }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div class="logo">ML</div>
+      <div>
+        <h1>Mad Libs</h1>
+        <div class="subtitle">Fill the blanks → generate a fun story.</div>
+      </div>
+    </header>
+
+    <section class="pad">
+      <form id="libform" novalidate>
+        <label for="noun">Noun:</label>
+        <input type="text" id="noun" placeholder="ex: dragon">
+
+        <label for="adjective">Adjective:</label>
+        <input type="text" id="adjective" placeholder="ex: shiny">
+
+        <label for="person">Someone's Name:</label>
+        <input type="text" id="person" placeholder="ex: Chaimae">
+
+        <label for="verb">Verb:</label>
+        <input type="text" id="verb" placeholder="ex: dance">
+
+        <label for="place">A place:</label>
+        <input type="text" id="place" placeholder="ex: London">
+
+        <div class="row">
+          <button id="lib-button" class="btn primary" type="submit">Lib it!</button>
+          <button id="shuffle" class="btn secondary" type="button" disabled>Shuffle</button>
+          <span class="tag">Tip: Press <b>Enter</b> to generate the story.</span>
+        </div>
+      </form>
+
+      <p class="story">
+        <strong style="color:var(--primary)">Generated story:</strong>
+        <span id="story"></span>
+      </p>
+
+      <p class="note">Open the console to view logs and detect possible errors.</p>
+    </section>
+  </main>
+
+  <script>
+    // ====== Elements ======
+    const form   = document.getElementById('libform');
+    const noun   = document.getElementById('noun');
+    const adj    = document.getElementById('adjective');
+    const person = document.getElementById('person');
+    const verb   = document.getElementById('verb');
+    const place  = document.getElementById('place');
+    const out    = document.getElementById('story');
+    const shuffleBtn = document.getElementById('shuffle');
+
+    // ====== Templates (≥3) ======
+    const templates = [
+      ({noun, adjective, person, verb, place}) =>
+        `One day in ${place}, ${person} met a ${adjective} ${noun} who loved to ${verb} at sunrise.`,
+      ({noun, adjective, person, verb, place}) =>
+        `${person} always carries a ${adjective} ${noun} when they ${verb} across ${place}.`,
+      ({noun, adjective, person, verb, place}) =>
+        `In ${place}, a ${adjective} ${noun} convinced ${person} to ${verb} before breakfast.`,
+      ({noun, adjective, person, verb, place}) =>
+        `Legend says ${person} found a ${adjective} ${noun} in ${place} and taught it how to ${verb}.`,
+      ({noun, adjective, person, verb, place}) =>
+        `${person} tried to ${verb} quietly, but a ${adjective} ${noun} in ${place} started clapping.`
+    ];
+    let lastTemplateIndex = -1;
+
+    // ====== Helpers ======
+    const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
+
+    function getValues(){
+      const values = {
+        noun: noun.value.trim(),
+        adjective: adj.value.trim(),
+        person: person.value.trim(),
+        verb: verb.value.trim(),
+        place: place.value.trim()
+      };
+      console.log('Values:', values);
+      return values;
+    }
+
+    function getValuesPretty(v){
+      return { ...v, person: cap(v.person), place: cap(v.place) };
+    }
+
+    function validate(values){
+      let ok = true;
+      [noun, adj, person, verb, place].forEach(i => i.classList.remove('error'));
+      for (const [key, v] of Object.entries(values)){
+        if (!v){
+          ok = false;
+          ({noun, adjective: adj, person, verb, place}[key]).classList.add('error');
+        }
+      }
+      if (!ok) console.warn('Validation failed: some fields are empty.');
+      return ok;
+    }
+
+    function randomIndex(){
+      if (templates.length === 1) return 0;
+      let i;
+      do { i = Math.floor(Math.random()*templates.length); }
+      while(i === lastTemplateIndex);
+      lastTemplateIndex = i;
+      return i;
+    }
+
+    function generateStory(values, index){
+      try{
+        const pretty = getValuesPretty(values);
+        return templates[index](pretty);
+      }catch(err){
+        console.error('Template error:', err);
+        return 'Oops, something went wrong while generating the story.';
+      }
+    }
+
+    // ====== Events ======
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();                           // ne pas recharger la page
+      const values = getValues();
+      if (!validate(values)) return;
+
+      const idx = randomIndex();
+      out.textContent = generateStory(values, idx);
+      shuffleBtn.disabled = false;                  // activer Shuffle après 1ère histoire
+    });
+
+    shuffleBtn.addEventListener('click', ()=>{
+      const values = getValues();
+      if (!validate(values)) return;
+      const idx = randomIndex();
+      out.textContent = generateStory(values, idx);
+    });
+  </script>
+</body>
+</html>
