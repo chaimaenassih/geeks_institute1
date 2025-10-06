@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pro Coloring Squares — Sky</title>
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg:#e9f5ff;          
+    --panel:#f7fbff;       
+    --card:#ffffff;        
+    --ink:#0f172a;         
+    --muted:#475569;       
+    --border:#e2e8f0;      
+    --accent:#4f46e5;      
+    --accent-2:#4338ca;    
+    --warn:#f59e0b;        
+    --danger:#ef4444;
+    --chip:#eaf2ff;        
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Noto Sans",sans-serif;
+    color:var(--ink);
+    display:flex; justify-content:center; padding:22px;
+
+    background:
+      radial-gradient(1200px 220px at 15% -30%, #ffffff80, transparent 60%),
+      radial-gradient(900px 180px at 85% -20%, #ffffff66, transparent 65%),
+      linear-gradient(180deg, #bfe4ff 0%, #e9f5ff 40%, #f6fbff 100%);
+  }
+
+  .app{ width:min(1180px,96vw); }
+  .head{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .logo{
+    width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+    background:linear-gradient(145deg,#6366f1,#06b6d4); color:#fff; font-weight:900;
+    box-shadow:0 8px 24px rgba(79,70,229,.25)
+  }
+  h1{margin:0;font-size:24px;letter-spacing:.3px}
+  .sub{color:var(--muted);font-size:13px}
+  .tip{
+    margin-left:auto; color:#4338ca; background:var(--chip);
+    border:1px solid var(--border); padding:6px 10px; border-radius:999px; font-size:12px
+  }
+
+  .wrap{ display:grid; grid-template-columns:340px 1fr; gap:18px; }
+  @media (max-width:980px){ .wrap{ grid-template-columns:1fr } }
+
+  .panel{
+    background:var(--panel); border:1px solid var(--border); border-radius:18px; padding:14px;
+    box-shadow:0 12px 30px rgba(15,23,42,.06);
+  }
+  .block{
+    background:var(--card); border:1px solid var(--border); border-radius:14px; padding:12px; margin:10px 0;
+  }
+  .title{
+    font-weight:800; font-size:15px; margin:0 0 10px 0; color:#111827; letter-spacing:.02em;
+  }
+  .label{font-size:13px; color:var(--muted); margin:8px 0 6px}
+
+  .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .btn{
+    padding:8px 12px; border-radius:10px; font-weight:800; letter-spacing:.02em;
+    border:1px solid var(--border); background:#ffffff; color:var(--ink); cursor:pointer;
+    box-shadow:0 2px 0 rgba(15,23,42,.04);
+  }
+  .btn.primary{background:var(--accent); color:#fff; border-color:transparent}
+  .btn.primary:hover{background:var(--accent-2)}
+  .btn:disabled{opacity:.5; cursor:not-allowed}
+
+  .palette{
+    --sw:28px;
+    display:grid; grid-template-columns:repeat(7,var(--sw)); grid-auto-rows:var(--sw); gap:10px;
+  }
+  .swatch{width:var(--sw); height:var(--sw); border-radius:8px; border:1px solid #00000026; cursor:pointer}
+
+  .current{
+    margin-top:10px; display:flex; align-items:center; gap:10px;
+    background:#f1f6ff; border:1px solid var(--border); padding:9px 11px; border-radius:12px; color:var(--muted)
+  }
+  .current i{width:18px;height:18px;border-radius:4px;border:1px solid #0002;display:inline-block}
+
+  .pickerWrap{
+    display:flex; align-items:center; gap:10px; background:#ffffff; border:1px solid var(--border);
+    padding:8px; border-radius:12px;
+  }
+  #picker{width:42px;height:42px;border:none;background:none;padding:0}
+  .hex{
+    padding:8px 10px; background:#f8fafc; color:var(--ink);
+    border:1px solid var(--border); border-radius:10px; font-family:ui-monospace,monospace; width:110px; text-align:center;
+  }
+
+  .slider{appearance:none;width:100%;height:8px;border-radius:999px; background:#e5e7eb; outline:none}
+  .slider::-webkit-slider-thumb{appearance:none;width:16px;height:16px;border-radius:50%;background:var(--warn);border:2px solid #fff; box-shadow:0 0 0 1px #d1d5db}
+
+  .kbd{font-family:ui-monospace,monospace;background:#ffffff;border:1px solid var(--border);padding:2px 6px;border-radius:6px}
+
+  .board{
+    background:var(--panel); border:1px solid var(--border); border-radius:18px; padding:12px;
+    box-shadow:0 12px 30px rgba(15,23,42,.06);
+  }
+  .topbar{display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--muted); margin-bottom:8px}
+  .canvasWrap{
+    background:#ffffff; border-radius:12px; border:1px solid #e5e7eb; padding:6px;
+    box-shadow:inset 0 0 0 1px #00000008;
+  }
+  .grid{
+    --cells: 30;
+    display:grid;
+    grid-template-columns:repeat(var(--cells),1fr);
+    aspect-ratio:1/1;
+    gap:1px;
+    background:#e5e7eb;
+    border:1px solid #e5e7eb;
+    border-radius:8px;
+    user-select:none; touch-action:none; cursor:crosshair;
+    transform-origin:top left;
+  }
+  .cell{background:#fff; width:100%; height:100%}
+  .cell:hover{outline:1px solid #0001}
+  .zoombar{display:flex; gap:8px; justify-content:flex-end; margin-top:8px}
+
+  .cursor-erase{
+    cursor: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'>\
+  <rect x='2' y='18' width='14' height='10' rx='2' fill='%23fca5a5' stroke='%231f2937' stroke-width='2'/>\
+  <rect x='10' y='8' width='14' height='10' rx='2' fill='%239ca3af' stroke='%231f2937' stroke-width='2'/>\
+  <path d='M10 18 L24 8' stroke='%231f2937' stroke-width='2'/>\
+</svg>") 6 26, crosshair;
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="head">
+      <div class="logo">CG</div>
+      <div>
+        <h1 style="margin:0">COLORING SQUARES</h1>
+        <div class="sub">Show up your own creativity</div>
+      </div>
+      <div class="tip">Tips: P/E/F/I — <span class="kbd">Ctrl+Z</span>/<span class="kbd">Ctrl+Y</span></div>
+    </div>
+
+    <div class="wrap">
+      <!-- ==== LEFT PANEL ==== -->
+      <aside class="panel">
+        <div class="block">
+          <div class="title">Grid size</div>
+          <input type="range" min="10" max="60" value="30" id="size" class="slider">
+          <div class="label">Size: <b id="sizeLabel">30 × 30</b></div>
+        </div>
+
+        <div class="block">
+          <div class="title">Tools</div>
+          <div class="row" style="margin-bottom:8px">
+            <button class="btn primary" id="paintBtn" title="P">Paint</button>
+            <button class="btn"   id="eraserBtn" title="E">Erase</button>
+            <button class="btn"   id="fillBtn"   title="F">Fill</button>
+            <button class="btn"   id="dropperBtn" title="I">Eyedrop</button>
+            <button class="btn"   id="clearBtn">Clear</button>
+          </div>
+          <div class="row">
+            <button class="btn" id="undoBtn" title="Ctrl+Z">Undo</button>
+            <button class="btn" id="redoBtn" title="Ctrl+Y">Redo</button>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="title">Palette</div>
+          <div class="palette" id="palette"></div>
+          <div class="current"><i id="preview"></i> <span id="currentLabel">Current: #000000</span></div>
+        </div>
+
+        <div class="block">
+          <div class="title">Custom color</div>
+          <div class="pickerWrap">
+            <input type="color" id="picker" value="#000000">
+            <span class="muted">Pick</span>
+            <input type="text" id="hex" class="hex" value="#000000" maxlength="7">
+            <button class="btn" id="addColor">Add</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ==== RIGHT BOARD ==== -->
+      <section class="board">
+        <div class="topbar">
+          <div>YOUR BOARD</div>
+          <div>Cell: <b id="coords">–,–</b> • Mode: <b id="modeLabel">Paint</b></div>
+        </div>
+
+        <div class="canvasWrap">
+          <div id="grid" class="grid" aria-label="drawing board"></div>
+        </div>
+
+        <div class="zoombar">
+          <button class="btn" id="zoomOut">Zoom −</button>
+          <button class="btn" id="zoomIn">Zoom +</button>
+          <button class="btn" id="zoomFit">Fit</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+  const grid = document.getElementById('grid');
+  const size = document.getElementById('size');
+  const sizeLabel = document.getElementById('sizeLabel');
+  const coordsEl = document.getElementById('coords');
+  const modeLabel = document.getElementById('modeLabel');
+
+  const paintBtn = document.getElementById('paintBtn');
+  const eraserBtn = document.getElementById('eraserBtn');
+  const fillBtn = document.getElementById('fillBtn');
+  const dropperBtn = document.getElementById('dropperBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const undoBtn = document.getElementById('undoBtn');
+  const redoBtn = document.getElementById('redoBtn');
+
+  const paletteEl = document.getElementById('palette');
+  const preview = document.getElementById('preview');
+  const currentLabel = document.getElementById('currentLabel');
+  const picker = document.getElementById('picker');
+  const hex = document.getElementById('hex');
+  const addColor = document.getElementById('addColor');
+
+  const zoomIn = document.getElementById('zoomIn');
+  const zoomOut = document.getElementById('zoomOut');
+  const zoomFit = document.getElementById('zoomFit');
+
+  let N = 30;
+  let color = '#000000';
+  let tool = 'paint';      // 'paint' | 'erase' | 'fill' | 'dropper'
+  let drawing = false;
+  let scale = 1;
+
+  let undoStack = [];
+  let redoStack = [];
+
+  const preset = [
+    '#000000','#1f2937','#ef4444','#fb7185','#fb923c','#fbbf24','#f59e0b',
+    '#22c55e','#10b981','#60a5fa','#3b82f6','#60a5fa','#8b5cf6','#a855f7',
+    '#ec4899','#6b7280','#9ca3af','#ffffff'
+  ];
+
+  const toHex = (c)=>{ const ctx=document.createElement('canvas').getContext('2d'); ctx.fillStyle=c; return ctx.fillStyle; };
+  const idx = (r,c)=> r*N + c;
+
+  function buildGrid(n=N){
+    N = n;
+    grid.style.setProperty('--cells', N);
+    grid.innerHTML = '';
+    for(let i=0;i<N*N;i++){
+      const d = document.createElement('div');
+      d.className='cell';
+      d.dataset.i = i;
+      d.style.background = '#ffffff';
+      grid.appendChild(d);
+    }
+    sizeLabel.textContent = `${N} × ${N}`;
+    pushHistory();
+  }
+
+  function xyFromIndex(i){
+    const r = Math.floor(i/N);
+    const c = i % N;
+    return [r,c];
+  }
+
+  function setTool(t){
+    tool = t;
+    [paintBtn,eraserBtn,fillBtn,dropperBtn].forEach(b=>b.classList.remove('primary'));
+    if(t==='paint') paintBtn.classList.add('primary');
+    if(t==='erase') eraserBtn.classList.add('primary');
+    if(t==='fill')  fillBtn.classList.add('primary');
+    if(t==='dropper') dropperBtn.classList.add('primary');
+    modeLabel.textContent = {paint:'Paint', erase:'Erase', fill:'Fill', dropper:'Eyedrop'}[t];
+
+    if(t==='erase') grid.classList.add('cursor-erase');
+    else grid.classList.remove('cursor-erase');
+  }
+
+  function setColor(c){
+    color = toHex(c);
+    picker.value = color;
+    hex.value = color;
+    preview.style.background = color;
+    currentLabel.textContent = `Current: ${color}`;
+    if(tool==='dropper') setTool('paint');
+  }
+
+  function pushHistory(){
+    const state = Array.from(grid.children).map(cell => cell.style.background || '#ffffff');
+    undoStack.push({N, state});
+    if(undoStack.length > 50) undoStack.shift();
+    redoStack = [];
+    updateUndoRedo();
+  }
+  function applyState(snap){
+    if(!snap) return;
+    if(snap.N !== N){ buildGrid(snap.N); }
+    grid.querySelectorAll('.cell').forEach((cell, i)=> cell.style.background = snap.state[i] || '#ffffff');
+  }
+  function updateUndoRedo(){
+    undoBtn.disabled = undoStack.length<=1;
+    redoBtn.disabled = redoStack.length===0;
+  }
+
+  function paintCell(cell){
+    if(!cell || !cell.classList.contains('cell')) return;
+    if(tool==='paint') cell.style.background = color;
+    else if(tool==='erase') cell.style.background = '#ffffff';       // gomme : efface cellule par cellule
+    else if(tool==='dropper'){ setColor(cell.style.background || '#000'); setTool('paint'); }
+  }
+
+  function paintAtPointer(e){
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    paintCell(el);
+    if(el && el.dataset && el.dataset.i){
+      const [r,c] = xyFromIndex(+el.dataset.i);
+      coordsEl.textContent = `${c+1},${r+1}`;
+    }
+  }
+
+  function floodFill(startCell){
+    const startColor = startCell.style.background || '#ffffff';
+    const newColor = (tool==='erase') ? '#ffffff' : color;
+    if(startColor === newColor) return;
+
+    const q = [];
+    const start = +startCell.dataset.i;
+    q.push(start);
+    const seen = new Set([start]);
+
+    while(q.length){
+      const i = q.shift();
+      const [r,c] = xyFromIndex(i);
+      const cell = grid.children[i];
+      if(!cell) continue;
+      if((cell.style.background||'#ffffff') !== startColor) continue;
+
+      cell.style.background = newColor;
+
+      const neigh = [
+        (r>0) ? idx(r-1,c) : -1,
+        (r<N-1) ? idx(r+1,c) : -1,
+        (c>0) ? idx(r,c-1) : -1,
+        (c<N-1) ? idx(r,c+1) : -1,
+      ].filter(v=>v>=0);
+      for(const ni of neigh){
+        if(!seen.has(ni)){
+          const cc = grid.children[ni];
+          if((cc.style.background||'#ffffff') === startColor){
+            seen.add(ni); q.push(ni);
+          }
+        }
+      }
+    }
+  }
+
+  grid.addEventListener('pointerdown', (e)=>{
+    drawing = true;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    if(!el || !el.classList.contains('cell')) return;
+    if(tool==='fill'){ floodFill(el); }
+    else { paintCell(el); }
+  });
+  grid.addEventListener('pointermove', (e)=>{
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    if(el && el.dataset && el.dataset.i){
+      const [r,c]=xyFromIndex(+el.dataset.i); coordsEl.textContent = `${c+1},${r+1}`;
+    }
+    if(!drawing) return;
+    if(tool==='fill' || tool==='dropper') return;
+    paintAtPointer(e);
+  });
+  function finishStroke(){
+    if(!drawing) return;
+    drawing = false;
+    pushHistory();
+  }
+  grid.addEventListener('pointerup', finishStroke);
+  grid.addEventListener('pointerleave', finishStroke);
+  grid.addEventListener('pointercancel', finishStroke);
+
+  // ===== Controls
+  paintBtn.onclick = ()=>setTool('paint');
+  eraserBtn.onclick= ()=>setTool('erase');
+  fillBtn.onclick  = ()=>setTool('fill');
+  dropperBtn.onclick = ()=>setTool('dropper');
+
+  clearBtn.onclick = ()=>{
+    grid.querySelectorAll('.cell').forEach(c=>c.style.background='#ffffff');
+    pushHistory();
+  };
+
+  undoBtn.onclick = ()=>{
+    if(undoStack.length<=1) return;
+    const curr = undoStack.pop();
+    redoStack.push(curr);
+    const prev = undoStack[undoStack.length-1];
+    applyState(prev);
+    updateUndoRedo();
+  };
+  redoBtn.onclick = ()=>{
+    const snap = redoStack.pop();
+    if(!snap) return;
+    undoStack.push(snap);
+    applyState(snap);
+    updateUndoRedo();
+  };
+
+  size.oninput = ()=>{
+    sizeLabel.textContent = `${size.value} × ${size.value}`;
+    buildGrid(+size.value);
+    updateUndoRedo();
+  };
+
+  function makePalette(){
+    paletteEl.innerHTML='';
+    preset.forEach(c=>{
+      const d=document.createElement('button');
+      d.className='swatch'; d.style.background=c; d.title=c;
+      d.onclick=()=>setColor(c);
+      paletteEl.appendChild(d);
+    });
+  }
+
+  picker.oninput = (e)=> setColor(e.target.value);
+  hex.oninput = (e)=>{
+    const v=e.target.value.trim();
+    if(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v)) setColor(v);
+  };
+  addColor.onclick = ()=>{
+    const v = toHex(hex.value || picker.value);
+    preset.splice(1,0,v);
+    makePalette();
+    setColor(v);
+  };
+
+  function applyZoom(){ grid.style.transform = `scale(${scale})`; }
+  zoomIn.onclick = ()=>{ scale = Math.min(2.5, +(scale+0.1).toFixed(2)); applyZoom(); };
+  zoomOut.onclick= ()=>{ scale = Math.max(0.6, +(scale-0.1).toFixed(2)); applyZoom(); };
+  zoomFit.onclick= ()=>{ scale = 1; applyZoom(); };
+
+  window.addEventListener('keydown',(e)=>{
+    if(e.ctrlKey && e.key.toLowerCase()==='z'){ e.preventDefault(); undoBtn.click(); }
+    if(e.ctrlKey && e.key.toLowerCase()==='y'){ e.preventDefault(); redoBtn.click(); }
+    const k=e.key.toLowerCase();
+    if(k==='p') setTool('paint');
+    if(k==='e') setTool('erase');
+    if(k==='f') setTool('fill');
+    if(k==='i') setTool('dropper');
+  });
+
+  makePalette();
+  setColor('#000000');
+  setTool('paint');
+  buildGrid(30);
+  applyZoom();
+</script>
+</body>
+</html>
