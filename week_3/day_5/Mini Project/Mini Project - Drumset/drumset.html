@@ -7,8 +7,8 @@
   <style>
     :root{
       --ink:#eaf1ff;
-      --blue: #7fd3ff;         /* bleu clair pour le halo par défaut */
-      --blue-strong: #a6e4ff;  /* halo encore plus clair à l’activation */
+      --blue: #7fd3ff;         
+      --blue-strong: #a6e4ff;  
       --key-bg: #0f1531;
       --key-bg2:#0a1026;
       --key-active:#1a2a60;
@@ -23,29 +23,28 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       color:var(--ink);
       line-height:1.45;
-      /* Image de fond plein écran */
+      
       background: url("./screenshot.jpg") center / cover no-repeat fixed;
     }
-    /* Voile sombre pour la lisibilité */
+    
     body::after{
       content:"";
       position:fixed; inset:0; z-index:-1;
       background: linear-gradient(rgba(8,10,18,.42), rgba(8,10,18,.62));
     }
 
-    /* Conteneur de centrage */
+  
     .stage{
       min-height:100dvh;
       display:grid; place-items:center;
       padding:24px 16px;
     }
     .center{
-      transform: translateY(-6vh); /* remonte légèrement la ligne */
+      transform: translateY(-6vh); 
       width:min(1100px, 94vw);
     }
 
-    /* ----- LIGNE DE TOUCHES ----- */
-    /* >>> Panneau supprimé: pas d'arrière-plan, pas de bordure */
+    
     .keyboard{ display:flex; justify-content:center; align-items:center; width:100%; }
     .keys{ display:flex; gap:18px; flex-wrap:nowrap; justify-content:center; }
 
@@ -59,11 +58,11 @@
       user-select:none; cursor:pointer;
       position:relative;
       transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
-      /* Halo BLEU CLAIR plus visible */
+      
       box-shadow:
-        0 0 0 4px rgba(127,211,255,.16),         /* anneau doux */
-        0 0 26px rgba(127,211,255,.55),          /* halo externe */
-        0 14px 28px rgba(0,0,0,.45);             /* ombre */
+        0 0 0 4px rgba(127,211,255,.16),         
+        0 0 26px rgba(127,211,255,.55),          
+        0 14px 28px rgba(0,0,0,.45);             
     }
     .key .letter{
       font-size:38px; font-weight:800; letter-spacing:.4px; line-height:1;
