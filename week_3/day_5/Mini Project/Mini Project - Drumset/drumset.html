@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Drumset — Ligne centrée (fond image)</title>
+  <style>
+    :root{
+      --ink:#eaf1ff;
+      --blue: #7fd3ff;         /* bleu clair pour le halo par défaut */
+      --blue-strong: #a6e4ff;  /* halo encore plus clair à l’activation */
+      --key-bg: #0f1531;
+      --key-bg2:#0a1026;
+      --key-active:#1a2a60;
+
+      --key-w: 104px;
+      --key-h: 112px;
+      --radius: 12px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0}
+    body{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--ink);
+      line-height:1.45;
+      /* Image de fond plein écran */
+      background: url("./screenshot.jpg") center / cover no-repeat fixed;
+    }
+    /* Voile sombre pour la lisibilité */
+    body::after{
+      content:"";
+      position:fixed; inset:0; z-index:-1;
+      background: linear-gradient(rgba(8,10,18,.42), rgba(8,10,18,.62));
+    }
+
+    /* Conteneur de centrage */
+    .stage{
+      min-height:100dvh;
+      display:grid; place-items:center;
+      padding:24px 16px;
+    }
+    .center{
+      transform: translateY(-6vh); /* remonte légèrement la ligne */
+      width:min(1100px, 94vw);
+    }
+
+    /* ----- LIGNE DE TOUCHES ----- */
+    /* >>> Panneau supprimé: pas d'arrière-plan, pas de bordure */
+    .keyboard{ display:flex; justify-content:center; align-items:center; width:100%; }
+    .keys{ display:flex; gap:18px; flex-wrap:nowrap; justify-content:center; }
+
+    .key{
+      width:var(--key-w); height:var(--key-h);
+      border-radius:var(--radius);
+      border:1.5px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, var(--key-bg), var(--key-bg2));
+      color:#e9f2ff;
+      display:grid; place-items:center;
+      user-select:none; cursor:pointer;
+      position:relative;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      /* Halo BLEU CLAIR plus visible */
+      box-shadow:
+        0 0 0 4px rgba(127,211,255,.16),         /* anneau doux */
+        0 0 26px rgba(127,211,255,.55),          /* halo externe */
+        0 14px 28px rgba(0,0,0,.45);             /* ombre */
+    }
+    .key .letter{
+      font-size:38px; font-weight:800; letter-spacing:.4px; line-height:1;
+      text-shadow: 0 2px 10px rgba(0,0,0,.45);
+    }
+    .key .name{ margin-top:6px; font-size:14px; font-weight:600; opacity:.9; }
+
+    .key:hover{ background: linear-gradient(180deg, #17224a, var(--key-bg2)); }
+    .key:focus-visible{ outline:2px solid rgba(166,228,255,.8); outline-offset:2px; }
+
+    .key.active{
+      transform: translateY(-3px);
+      /* Halo encore PLUS CLAIR quand actif */
+      box-shadow:
+        0 0 0 6px rgba(166,228,255,.22),
+        0 0 40px rgba(166,228,255,.95),
+        0 20px 34px rgba(0,0,0,.55);
+      background: linear-gradient(180deg, var(--key-active), #131b3d);
+    }
+
+    /* Responsive léger */
+    @media (max-width: 820px){
+      :root{ --key-w: 88px; --key-h: 98px; }
+      .keys{ gap:14px; }
+    }
+    @media (max-width: 620px){
+      :root{ --key-w: 76px; --key-h: 90px; }
+      .keys{ gap:12px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <div class="center">
+      <section class="keyboard" aria-label="Touches jouables A à L">
+        <div class="keys" id="keys">
+        
+          <button class="key" data-key="A" aria-label="A (Boom)">
+            <div class="letter">A</div><div class="name">Boom</div>
+          </button>
+          <button class="key" data-key="S" aria-label="S (Clap)">
+            <div class="letter">S</div><div class="name">Clap</div>
+          </button>
+          <button class="key" data-key="D" aria-label="D (HiHat)">
+            <div class="letter">D</div><div class="name">HiHat</div>
+          </button>
+          <button class="key" data-key="F" aria-label="F (Kick)">
+            <div class="letter">F</div><div class="name">Kick</div>
+          </button>
+          <button class="key" data-key="G" aria-label="G (OpenHat)">
+            <div class="letter">G</div><div class="name">OpenHat</div>
+          </button>
+          <button class="key" data-key="H" aria-label="H (Ride)">
+            <div class="letter">H</div><div class="name">Ride</div>
+          </button>
+          <button class="key" data-key="J" aria-label="J (Snare)">
+            <div class="letter">J</div><div class="name">Snare</div>
+          </button>
+          <button class="key" data-key="K" aria-label="K (Tink)">
+            <div class="letter">K</div><div class="name">Tink</div>
+          </button>
+          <button class="key" data-key="L" aria-label="L (Tom)">
+            <div class="letter">L</div><div class="name">Tom</div>
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Audio (.wav dans ./sounds) -->
+  <audio data-key="A" src="./sounds/boom.wav" preload="auto"></audio>
+  <audio data-key="S" src="./sounds/clap.wav" preload="auto"></audio>
+  <audio data-key="D" src="./sounds/hihat.wav" preload="auto"></audio>
+  <audio data-key="F" src="./sounds/kick.wav" preload="auto"></audio>
+  <audio data-key="G" src="./sounds/openhat.wav" preload="auto"></audio>
+  <audio data-key="H" src="./sounds/ride.wav" preload="auto"></audio>
+  <audio data-key="J" src="./sounds/snare.wav" preload="auto"></audio>
+  <audio data-key="K" src="./sounds/tink.wav" preload="auto"></audio>
+  <audio data-key="L" src="./sounds/tom.wav" preload="auto"></audio>
+
+  <script>
+    // Lecture d’un son
+    function playForKey(key){
+      const k = (key||'').toUpperCase();
+      const audio = document.querySelector(`audio[data-key="${k}"]`);
+      if(!audio) return;
+
+      const cap = document.querySelector(`.key[data-key="${k}"]`);
+      if(cap) cap.classList.add('active');
+
+      audio.currentTime = 0;
+      const p = audio.play();
+      if(p && p.catch) p.catch(()=>{});
+    }
+    // Fin de l’effet visuel
+    function releaseForKey(key){
+      const k = (key||'').toUpperCase();
+      const cap = document.querySelector(`.key[data-key="${k}"]`);
+      if(cap) cap.classList.remove('active');
+    }
+
+    // Clic sur la rangée
+    document.getElementById('keys').addEventListener('click', (e)=>{
+      const cap = e.target.closest('.key'); if(!cap) return;
+      playForKey(cap.dataset.key);
+      setTimeout(()=>releaseForKey(cap.dataset.key), 120);
+    });
+
+    // Clavier (A..L)
+    window.addEventListener('keydown', (e)=>{
+      if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+      const key = e.key ? e.key : String.fromCharCode(e.keyCode||0);
+      playForKey(key);
+    });
+    window.addEventListener('keyup', (e)=>{
+      if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+      const key = e.key ? e.key : String.fromCharCode(e.keyCode||0);
+      releaseForKey(key);
+    });
+
+    // Nettoyage quand un audio se termine
+    document.querySelectorAll('audio[data-key]').forEach(a=>{
+      a.addEventListener('ended', ()=>releaseForKey(a.dataset.key));
+    });
+  </script>
+</body>
+</html>
