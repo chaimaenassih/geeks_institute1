@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Challenge — Car Inventory (console only)</title>
+</head>
+<body>
+<script>
+"use strict";
+console.clear();
+
+const inventory = [
+  { id: 1, car_make: "Lincoln",   car_model: "Navigator",              car_year: 2009 },
+  { id: 2, car_make: "Mazda",     car_model: "Miata MX-5",             car_year: 2001 },
+  { id: 3, car_make: "Honda",     car_model: "Accord",                 car_year: 1983 },
+  { id: 4, car_make: "Land Rover",car_model: "Defender Ice Edition",   car_year: 2010 },
+  { id: 5, car_make: "Honda",     car_model: "Accord",                 car_year: 1995 },
+];
+
+/* ============================
+   Part I — getCarHonda
+   - Return first Honda as: "This is a {make} {model} from {year}."
+   - Uses Array.prototype.find
+   ============================ */
+function getCarHonda(carInventory) {
+  const honda = carInventory.find(car => car.car_make === "Honda");
+  return honda
+    ? `This is a ${honda.car_make} ${honda.car_model} from ${honda.car_year}.`
+    : "No Honda found in inventory.";
+}
+
+// Demo
+console.log("Part I ->", getCarHonda(inventory));
+// Expected: "This is a Honda Accord from 1983."
+
+/* ============================
+   Part II — sortCarInventoryByYear
+   - Return a NEW array sorted ascending by car_year
+   - Uses Array.prototype.sort (with a copy to avoid mutating original)
+   ============================ */
+function sortCarInventoryByYear(carInventory) {
+  return [...carInventory].sort((a, b) => a.car_year - b.car_year);
+}
+
+// Demo
+const sorted = sortCarInventoryByYear(inventory);
+console.log("Part II -> sorted by year (asc):", sorted);
+
+/* (Optional checks: original array unchanged) */
+console.log("Original inventory unchanged:", inventory);
+</script>
+</body>
+</html>
