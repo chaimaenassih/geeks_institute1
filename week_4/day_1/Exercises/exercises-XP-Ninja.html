@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advanced Functions – mergeWords</title>
+  <style>body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}</style>
+</head>
+<body>
+<script>
+/*
+  Exercise 1 : Merge Words
+
+  Exigence :
+  - mergeWords('Hello')() -> 'Hello'
+  - mergeWords('There')('is')('no')('spoon.')() -> 'There is no spoon.'
+  - L’appel SANS argument "termine" la chaîne et renvoie la phrase.
+
+  Version currifiée (fonctions fléchées), équivalente au code fourni :
+*/
+const mergeWords = first => next =>
+  next === undefined ? first : mergeWords(first + ' ' + next);
+
+// Vérifications demandées (console uniquement) :
+console.log( mergeWords('Hello')() ); // 'Hello'
+console.log( mergeWords('There')('is')('no')('spoon.')() ); // 'There is no spoon.'
+
+/*
+  (Facultatif) Deux autres exemples :
+*/
+console.log( mergeWords('I')('love')('JS')() );           // 'I love JS'
+console.log( mergeWords('SingleWord')() );                 // 'SingleWord'
+</script>
+</body>
+</html>
