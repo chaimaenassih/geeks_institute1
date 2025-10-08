@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>All Exercises — Random, Capitalize, Palindrome, Biggest, Unique, Calendar</title>
+</head>
+<body>
+<script>
+"use strict";
+console.clear();
+
+/* =========================================================
+   Small CSS injected by JS (no table markup in HTML)
+   ========================================================= */
+const style = document.createElement("style");
+style.textContent = `
+  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 1.5rem; }
+  .cal-wrap { max-width: 760px; margin-top: 1.25rem; }
+  .cal-title { font-weight: 700; margin: 0 0 .5rem 0; }
+  .cal { width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; }
+  .cal th, .cal td { border: 1px solid #e0e0e0; padding: 10px 12px; text-align: center; width: 42px; height: 34px; }
+  .cal thead th { background: #f5f6f8; color: #555; }
+  .cal tbody td { color: #333; }
+  .cal tbody td.is-empty { color: #9aa0a6; } /* '.' cells */
+`;
+document.head.appendChild(style);
+
+/* =========================================================
+   EXERCISE 1 — Random Number (1..100) + log even numbers
+   ========================================================= */
+(function ex1() {
+  const rand = Math.floor(Math.random() * 100) + 1; // 1..100
+  const evens = [];
+  for (let i = 0; i <= rand; i += 2) evens.push(i); // 0,2,4,... up to rand if even
+  console.log("Ex1 — random =", rand);
+  console.log("Ex1 — even numbers 0..random ->", evens);
+})();
+
+/* =========================================================
+   EXERCISE 2 — Capitalized letters (even/odd indexes)
+   Returns [evenCaps, oddCaps], input is lowercase no-spaces
+   ========================================================= */
+function capitalize(str) {
+  let evenCaps = "", oddCaps = "";
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (i % 2 === 0) { evenCaps += ch.toUpperCase(); oddCaps += ch; }
+    else             { evenCaps += ch;               oddCaps += ch.toUpperCase(); }
+  }
+  return [evenCaps, oddCaps];
+}
+console.log("Ex2 — capitalize('abcdef') ->", capitalize("abcdef")); // ['AbCdEf','aBcDeF']
+
+/* =========================================================
+   EXERCISE 3 — Is palindrome?
+   Ignores case and non-alphanumerics.
+   ========================================================= */
+function isPalindrome(s) {
+  const norm = (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  let l = 0, r = norm.length - 1;
+  while (l < r) { if (norm[l++] !== norm[r--]) return false; }
+  return true;
+}
+console.log("Ex3 — 'Madam' ->", isPalindrome("Madam")); // true
+console.log("Ex3 — 'The Quick' ->", isPalindrome("The Quick")); // false
+console.log("Ex3 — 'A man, a plan, a canal: Panama!' ->", isPalindrome("A man, a plan, a canal: Panama!")); // true
+
+/* =========================================================
+   EXERCISE 4 — Biggest Number in Array
+   Works for any array; non-numeric values ignored.
+   If no numeric values → return 0.
+   ========================================================= */
+function biggestNumberInArray(arrayNumber) {
+  let found = false;
+  let max = 0;
+  for (let i = 0; i < arrayNumber.length; i++) {
+    const v = arrayNumber[i];
+    if (typeof v === "number" && Number.isFinite(v)) {
+      if (!found) { max = v; found = true; }
+      else if (v > max) max = v;
+    }
+  }
+  return found ? max : 0;
+}
+console.log("Ex4 — [-1,0,3,100,99,2,99] ->", biggestNumberInArray([-1,0,3,100,99,2,99])); // 100
+console.log("Ex4 — ['a',3,4,2] ->", biggestNumberInArray(['a',3,4,2])); // 4
+console.log("Ex4 — [] ->", biggestNumberInArray([])); // 0
+
+/* =========================================================
+   EXERCISE 5 — Unique Elements
+   Returns a NEW array with unique items (first occurrence kept).
+   ========================================================= */
+function unique(arr) {
+  return [...new Set(arr)];
+}
+console.log("Ex5 — unique([1,2,3,3,3,3,4,5]) ->", unique([1,2,3,3,3,3,4,5])); // [1,2,3,4,5]
+
+/* =========================================================
+   EXERCISE 6 — Calendar (DOM)
+   - createCalendar(year, month) where month is 1..12
+   - Week starts Monday (Mon..Sun)
+   - Table built entirely via DOM API (no table in HTML)
+   - Empty cells rendered as '.'
+   ========================================================= */
+function mondayFirstIndex(date) {           // JS: getDay() Sun=0..Sat=6  → Mon=0..Sun=6
+  return (date.getDay() + 6) % 7;
+}
+
+function createCalendar(year, month) {
+  const mIdx = month - 1;                   // JS month index 0..11
+  const first = new Date(year, mIdx, 1);
+  const daysInMonth = new Date(year, mIdx + 1, 0).getDate();
+  const offset = mondayFirstIndex(first);   // number of leading blanks
+
+  // Remove previous calendar(s)
+  document.querySelectorAll(".cal-wrap").forEach(n => n.remove());
+
+  // Wrapper + title
+  const wrap = document.createElement("div");
+  wrap.className = "cal-wrap";
+  const title = document.createElement("div");
+  title.className = "cal-title";
+  title.textContent = new Date(year, mIdx, 1).toLocaleString(undefined, { month: "long", year: "numeric" });
+  wrap.appendChild(title);
+
+  // Table
+  const table = document.createElement("table");
+  table.className = "cal";
+
+  // Header Mon..Sun
+  const thead = document.createElement("thead");
+  const htr = document.createElement("tr");
+  ["MO","TU","WE","TH","FR","SA","SU"].forEach(lbl => {
+    const th = document.createElement("th");
+    th.textContent = lbl;
+    htr.appendChild(th);
+  });
+  thead.appendChild(htr);
+  table.appendChild(thead);
+
+  // Body
+  const tbody = document.createElement("tbody");
+  let tr = document.createElement("tr");
+
+  // leading blanks as '.'
+  for (let i = 0; i < offset; i++) {
+    const td = document.createElement("td");
+    td.textContent = ".";
+    td.className = "is-empty";
+    tr.appendChild(td);
+  }
+
+  // Fill days
+  for (let d = 1; d <= daysInMonth; d++) {
+    const td = document.createElement("td");
+    td.textContent = d;
+    tr.appendChild(td);
+
+    // Wrap to next row at Sunday (Mon=0..Sun=6)
+    if ((offset + d) % 7 === 0) {
+      tbody.appendChild(tr);
+      tr = document.createElement("tr");
+    }
+  }
+
+  // trailing blanks as '.'
+  if (tr.children.length > 0) {
+    while (tr.children.length < 7) {
+      const td = document.createElement("td");
+      td.textContent = ".";
+      td.className = "is-empty";
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+  document.body.appendChild(wrap);
+}
+
+// Demo calendar like the prompt’s screenshot (September 2012)
+createCalendar(2012, 9);
+
+// You can render another month from the Console, e.g.:
+// createCalendar(2025, 10);
+</script>
+</body>
+</html>
