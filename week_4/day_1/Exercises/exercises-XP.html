@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Exercises – Exact Solutions</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Arial; margin:0; }
+    nav#navbar { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#111827; color:#fff; }
+    nav#navbar .user { display:flex; align-items:center; gap:10px; }
+    nav#navbar img { width:32px; height:32px; border-radius:999px; object-fit:cover; }
+    main { max-width: 900px; margin: 16px auto; padding: 0 12px 40px; }
+   
+
+  </style>
+</head>
+<body>
+  <!-- EX7: Create a Navbar in the HTML -->
+  <nav id="navbar"></nav>
+
+  <!-- Only what must appear in the DOM (EX6 & EX8) -->
+  <main>
+    <div id="ex6-output"></div>
+    <div id="ex8-output"></div>
+  </main>
+
+  <script>
+/* =========================================================
+    EXERCISE 1 : Scope
+   Write your prediction as comments in a js file. (done)
+   The original snippets are shown below, fully commented
+   to avoid executing alerts or redeclaration conflicts.
+========================================================= */
+
+/*
+// #1
+function funcOne() {
+  let a = 5;
+  if (a > 1) {
+    a = 3;
+  }
+  // PREDICTION: alerts "inside the funcOne function 3"
+  alert(`inside the funcOne function ${a}`);
+}
+// #1.2: If 'const a = 5' then 'a = 3' throws a TypeError (no reassignment).
+
+// #2
+let a = 0;
+function funcTwo() {
+  a = 5; // reassigns global a
+}
+function funcThree() {
+  // PREDICTION before funcTwo(): alerts "... 0"
+  // PREDICTION after  funcTwo(): alerts "... 5"
+  alert(`inside the funcThree function ${a}`);
+}
+// With 'const a = 0', funcTwo() would throw on reassignment.
+
+// #3
+function funcFour() { window.a = "hello"; }
+function funcFive() {
+  // PREDICTION after funcFour(): alerts "... hello"
+  alert(`inside the funcFive function ${a}`);
+}
+
+// #4
+let a = 1;
+function funcSix() {
+  let a = "test";  // shadows outer a
+  // PREDICTION: alerts "... test"
+  alert(`inside the funcSix function ${a}`);
+}
+// With const inside funcSix: still fine (no reassignment).
+
+// #5
+let a = 2;
+if (true) {
+  let a = 5; // block-scoped, shadows only inside if
+  // PREDICTION: alerts "... 5"
+  alert(`in the if block ${a}`);
+}
+// PREDICTION: alerts "... 2" outside the if (outer unchanged)
+// With const instead of let: same outputs since no reassignment here.
+*/
+
+
+/* =========================================================
+    EXERCISE 2 : Ternary operator
+   - Transform to arrow function
+   - experiencePoints = 10 if true, else 1
+   - console.log the result
+========================================================= */
+const winBattle = () => true;
+const experiencePoints = winBattle() ? 10 : 1;
+console.log("EX2 experiencePoints:", experiencePoints);
+
+
+/* =========================================================
+   🌟 EXERCISE 3 : Is it a string ?
+   - Arrow function that returns true/false
+========================================================= */
+const isString = (val) => typeof val === "string" || val instanceof String;
+console.log("EX3 isString('hello'):", isString('hello'));        // true
+console.log("EX3 isString([1,2,4,0]):", isString([1,2,4,0]));    // false
+
+
+/* =========================================================
+ EXERCISE 4 : Find the sum
+   - One-line arrow function returning sum of 2 numbers
+========================================================= */
+const sum = (a, b) => a + b;
+console.log("EX4 sum(7,5):", sum(7,5));
+
+
+/* =========================================================
+    EXERCISE 5 : Kg and grams
+   - function declaration + invoke
+   - function expression + invoke
+   - one-line arrow + invoke
+   - one-line comment: difference declaration vs expression
+========================================================= */
+// Declaration
+function kgToGramsDecl(kg) { return kg * 1000; }
+console.log("EX5 Decl 3.2kg -> g:", kgToGramsDecl(3.2));
+
+// Expression
+const kgToGramsExpr = function(kg) { return kg * 1000; };
+console.log("EX5 Expr 0.75kg -> g:", kgToGramsExpr(0.75));
+
+// One-line arrow
+const kgToGramsArrow = kg => kg * 1000;
+console.log("EX5 Arrow 1.1kg -> g:", kgToGramsArrow(1.1));
+
+// Diff (one line): A function declaration is hoisted (available before its line),
+// whereas a function expression is not available before its assignment.
+
+
+/* =========================================================
+    EXERCISE 6 : Fortune teller
+   - Self invoking function (IIFE) with 4 args
+   - Display sentence in the DOM
+========================================================= */
+(function(numChildren, partnerName, location, jobTitle) {
+  const msg = `You will be a ${jobTitle} in ${location}, and married to ${partnerName} with ${numChildren} kids.`;
+  const out = document.getElementById('ex6-output');
+  if (out) {
+    const p = document.createElement('p');
+    p.textContent = msg;
+    out.appendChild(p);
+  }
+})(3, "Alex", "Casablanca", "Validation Lead");
+
+
+/* =========================================================
+   EXERCISE 7 : Welcome
+   - Navbar already in HTML
+   - Self invoking function adds a DIV in the navbar
+     showing user name and profile picture
+========================================================= */
+(function(userName) {
+  const navbar = document.getElementById('navbar');
+  if (!navbar) return;
+
+  const userDiv = document.createElement('div'); // the div required by the exercise
+  userDiv.className = 'user';
+
+  const nameSpan = document.createElement('span');
+  nameSpan.textContent = userName;
+
+  const avatar = document.createElement('img');
+  avatar.src = "https://api.dicebear.com/7.x/identicon/svg?seed=" + encodeURIComponent(userName);
+  avatar.alt = userName + " avatar";
+
+  userDiv.appendChild(nameSpan);
+  userDiv.appendChild(avatar);
+  navbar.appendChild(userDiv);
+})("John");
+
+
+/* =========================================================
+  EXERCISE 8 : Juice Bar
+   Part I: outer function makeJuice(size); inner addIngredients(3 items)
+   Part II: use an array, call addIngredients twice (6 in total), then displayJuice() in the DOM
+   Invoke makeJuice in global scope
+========================================================= */
+function makeJuice(size) {
+  const ingredients = [];
+
+  function addIngredients(i1, i2, i3) {
+    ingredients.push(i1, i2, i3);
+  }
+
+  function displayJuice() {
+    const sentence = `The client wants a ${size} juice, containing ${ingredients.join(", ")}.`;
+    const out = document.getElementById('ex8-output');
+    if (out) {
+      const p = document.createElement('p');
+      p.textContent = sentence;
+      out.appendChild(p);
+    }
+  }
+
+  // Client wants 6 ingredients → call twice
+  addIngredients("orange", "carrot", "ginger");
+  addIngredients("apple", "mint", "lemon");
+
+  displayJuice();
+}
+// Invoke in global scope
+makeJuice("large");
+  </script>
+</body>
+</html>
