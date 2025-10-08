@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Challenge – Groceries</title>
+  <style>body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}</style>
+</head>
+<body>
+<script>
+/* ===============================
+   Setup initial data (as given)
+================================ */
+let client = "John";
+
+const groceries = {
+  fruits : ["pear", "apple", "banana"],
+  vegetables: ["tomatoes", "cucumber", "salad"],
+  totalPrice : "20$",
+  other : {
+    paid : true,
+    meansOfPayment : ["cash", "creditCard"]
+  }
+};
+
+/* =========================================
+   1) displayGroceries (arrow + forEach)
+   - Doit console.log les 3 fruits
+========================================= */
+const displayGroceries = () => {
+  // => "pear", "apple", "banana"
+  groceries.fruits.forEach(fruit => console.log("fruit:", fruit));
+};
+
+displayGroceries();
+
+/* =========================================
+   2) cloneGroceries (arrow function)
+   Exigences dans la consigne :
+   - user = copie de client (primitive -> copie par valeur)
+   - changer client = "Betty" (user change ? NON)
+   - shopping = groceries (objet -> référence)
+   - changer totalPrice = "35$" (répercuté dans shopping ? OUI)
+   - changer paid = false (répercuté dans shopping ? OUI)
+   - invoquer cloneGroceries()
+========================================= */
+const cloneGroceries = () => {
+  /* --- PRÉDICTION : user copie la valeur de client (string primitive)
+     => si je change client ensuite, user NE change pas.
+     Raison : les primitives sont passées/affectées par valeur. */
+  let user = client;
+  console.log("Avant changement client:", { client, user }); // John / John
+
+  // Changer le client :
+  client = "Betty";
+  console.log("Après changement client:", { client, user });
+  // PRÉDICTION confirmée : client = "Betty", user RESTE "John".
+
+  /* --- PRÉDICTION : shopping = groceries (objet)
+     => ce n'est pas une copie profonde, c'est la même référence.
+     Toute modif via shopping se voit dans groceries et inversement. */
+  let shopping = groceries;
+
+  // Changer le totalPrice via shopping :
+  shopping.totalPrice = "35$";
+  console.log("Après totalPrice '35$':", {
+    groceries_totalPrice: groceries.totalPrice,  // "35$"
+    shopping_totalPrice: shopping.totalPrice     // "35$"
+  });
+  // PRÉDICTION confirmée : les deux montrent "35$".
+
+  // Changer le paid à false :
+  shopping.other.paid = false;
+  console.log("Après paid = false:", {
+    groceries_paid: groceries.other.paid,  // false
+    shopping_paid: shopping.other.paid     // false
+  });
+  // PRÉDICTION confirmée : les deux montrent false (même réf. objet).
+};
+
+cloneGroceries();
+
+/* ====== Notes rapides (pour révision) ======
+- Primitives (string, number, boolean, null, undefined, symbol, bigint)
+  -> copie par valeur.
+- Objets/Arrays/Fonctions -> affectation par référence (même objet).
+- Ici, user = client (primitive) => user ne change pas quand client change.
+- shopping = groceries (objet) => toute modif affecte les deux.
+============================================= */
+</script>
+</body>
+</html>
