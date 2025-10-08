@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Array methods — console only</title>
+</head>
+<body>
+  <script>
+    
+    (function runSolutions() {
+      console.clear();
+
+      console.log('--- EXERCISE 1 — map ---');
+      const ex1 = [1, 2, 3].map(num => typeof num === 'number' ? num * 2 : undefined);
+      console.log('Ex1 ->', ex1); // [2, 4, 6]
+
+      console.log('--- EXERCISE 2 — reduce ---');
+      const ex2 = [[0, 1], [2, 3]].reduce((acc, cur) => acc.concat(cur), [1, 2]);
+      console.log('Ex2 ->', ex2); // [1, 2, 0, 1, 2, 3]
+
+      console.log('--- EXERCISE 3 — value of i (index) ---');
+      const arrayNum = [1, 2, 4, 5, 8, 9];
+      const newArray = arrayNum.map((num, i) => {
+        console.log('Ex3 (num, i) ->', num, i); // i = 0..5
+        return num * 2;
+      });
+      console.log('Ex3 newArray ->', newArray); // [2, 4, 8, 10, 16, 18]
+
+      console.log('--- EXERCISE 4 — Nested arrays ---');
+      const array = [[1], [2], [3], [[[4]]], [[[5]]]];
+      console.log('Ex4.1 ->', array.flat(2)); // [1, 2, 3, [4], [5]]
+
+      const greeting = [
+        ['Hello', 'young', 'grasshopper!'],
+        ['you', 'are'],
+        ['learning', 'fast!'],
+      ];
+      console.log('Ex4.2 ->', greeting.map(w => w.join(' '))); // ["Hello young grasshopper!", "you are", "learning fast!"]
+      console.log('Ex4.3 ->', greeting.map(w => w.join(' ')).join(' ')); // "Hello young grasshopper! you are learning fast!"
+      console.log('Ex4.3 (alt) ->', greeting.flat().join(' '));
+
+      const trapped = [[[[[[[[[[[[[[[[[[[[[[[[[[3]]]]]]]]]]]]]]]]]]]]]]]]]];
+      console.log('Ex4.4 ->', trapped.flat(Infinity)); // [3]
+    })();
+  </script>
+</body>
+</html>
