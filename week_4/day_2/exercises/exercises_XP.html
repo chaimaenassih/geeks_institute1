@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arrays & Destructuring – Solutions</title>
+  <style>body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}</style>
+</head>
+<body>
+<script>
+(() => {
+/* =========================
+ Exercise 1 : Colors
+   - Afficher "1# choice is Blue." etc.
+   - Vérifier si "Violet" est présent
+========================= */
+{
+  const colors = ["Blue", "Green", "Red", "Orange", "Violet", "Indigo", "Yellow"];
+
+  console.log("Ex1 — list:");
+  colors.forEach((color, i) => {
+    console.log(`${i+1}# choice is ${color}.`);
+  });
+
+  console.log("Ex1 — has 'Violet' ?");
+  console.log(colors.includes("Violet") ? "Yeah" : "No...");
+}
+
+/* =========================
+ Exercise 2 : Colors #2
+   - Utiliser ordinal: ["th","st","nd","rd"]
+   - Afficher "1st choice is Blue." etc.
+   - Hint: ternary
+========================= */
+{
+  const colors = ["Blue", "Green", "Red", "Orange", "Violet", "Indigo", "Yellow"];
+  const ordinal = ["th","st","nd","rd"]; // indices 0..3
+
+  const suffix = (n) => {
+    // règles 11,12,13 → "th"
+    const v = n % 100;
+    if (v >= 11 && v <= 13) return ordinal[0];
+    // sinon selon le dernier chiffre
+    const last = n % 10;
+    return last === 1 ? ordinal[1]
+         : last === 2 ? ordinal[2]
+         : last === 3 ? ordinal[3]
+         : ordinal[0];
+  };
+
+  console.log("Ex2 — list with ordinals:");
+  colors.forEach((color, i) => {
+    const n = i + 1;
+    console.log(`${n}${suffix(n)} choice is ${color}.`);
+  });
+}
+
+/* =========================
+   Exercise 3 : Analyzing
+   Prédire les sorties puis vérifier
+========================= */
+{
+  console.log("Ex3 — part 1:");
+  const fruits = ["apple", "orange"];
+  const vegetables = ["carrot", "potato"];
+  // Résultat attendu: ['bread','carrot','potato','chicken','apple','orange']
+  const result = ['bread', ...vegetables, 'chicken', ...fruits];
+  console.log(result);
+
+  console.log("Ex3 — part 2:");
+  const country = "USA";
+  // Attendu: ['U','S','A']
+  console.log([...country]);
+
+  console.log("Ex3 — bonus:");
+  // Spread d'un array "sparse": [...[, ,]] -> [undefined, undefined]
+  let newArray = [...[,,]];
+  console.log(newArray);
+}
+
+/* =========================
+Exercise 4 : Employees
+   - map → "Hello <firstName>"
+   - filter → Full Stack Resident
+   - bonus → lastName des Full Stack Residents
+========================= */
+{
+  const users = [
+    { firstName: 'Bradley', lastName: 'Bouley', role: 'Full Stack Resident' },
+    { firstName: 'Chloe', lastName: 'Alnaji', role: 'Full Stack Resident' },
+    { firstName: 'Jonathan', lastName: 'Baughn', role: 'Enterprise Instructor' },
+    { firstName: 'Michael', lastName: 'Herman', role: 'Lead Instructor' },
+    { firstName: 'Robert', lastName: 'Hajek', role: 'Full Stack Resident' },
+    { firstName: 'Wes', lastName: 'Reid', role: 'Instructor'},
+    { firstName: 'Zach', lastName: 'Klabunde', role: 'Instructor'}
+  ];
+
+  const welcomeStudents = users.map(u => `Hello ${u.firstName}`);
+  console.log("Ex4 — welcomeStudents:", welcomeStudents);
+
+  const fullStackResidents = users.filter(u => u.role === 'Full Stack Resident');
+  console.log("Ex4 — Full Stack Residents:", fullStackResidents);
+
+  const fsLastNames = users
+    .filter(u => u.role === 'Full Stack Resident')
+    .map(u => u.lastName);
+  console.log("Ex4 — last names (FS Residents):", fsLastNames);
+}
+
+/* =========================
+    Exercise 5 : Star Wars
+   - reduce pour tout combiner en une seule string
+========================= */
+{
+  const epic = ['a', 'long', 'time', 'ago', 'in a', 'galaxy', 'far far', 'away'];
+  const sentence = epic.reduce((acc, word, i) => acc + (i ? " " : "") + word, "");
+  console.log("Ex5 — sentence:", sentence);
+}
+
+/* =========================
+ Exercise 6 : Employees #2
+   - filter → étudiants passés
+   - bonus → forEach pour féliciter
+========================= */
+{
+  const students = [
+    {name: "Ray", course: "Computer Science", isPassed: true}, 
+    {name: "Liam", course: "Computer Science", isPassed: false}, 
+    {name: "Jenner", course: "Information Technology", isPassed: true}, 
+    {name: "Marco", course: "Robotics", isPassed: true}, 
+    {name: "Kimberly", course: "Artificial Intelligence", isPassed: false}, 
+    {name: "Jamie", course: "Big Data", isPassed: false}
+  ];
+
+  const passed = students.filter(s => s.isPassed);
+  console.log("Ex6 — passed:", passed);
+
+  // Bonus: chaîner filter + forEach
+  students
+    .filter(s => s.isPassed)
+    .forEach(s => console.log(`Good job ${s.name}, you passed the course in ${s.course}`));
+}
+})(); // end IIFE
+</script>
+</body>
+</html>
