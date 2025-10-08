@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exercises — Variables, Conditionals, Loops, Objects (console only)</title>
+</head>
+<body>
+<script>
+"use strict";
+console.clear();
+
+(() => {
+  /* ============================
+     EXERCISE 1 — Divisible by three
+     ============================ */
+  let numbers = [123, 8409, 100053, 333333333, 7];
+
+  console.log("--- EX 1: Divisible by 3 ---");
+  for (let i = 0; i < numbers.length; i++) {
+    const n = numbers[i];
+    const isDivBy3 = (n % 3 === 0);
+    console.log(isDivBy3); // true or false each loop
+  }
+
+  /* ============================
+     EXERCISE 2 — Attendance
+     (no loop needed, just lookup)
+     ============================ */
+  let guestList = {
+    randy: "Germany",
+    karla: "France",
+    wendy: "Japan",
+    norman: "England",
+    sam: "Argentina"
+  };
+
+  console.log("--- EX 2: Attendance ---");
+  // Prompt the student for their name (browser prompt)
+  const inputNameRaw = prompt("What's your name?");
+  const inputName = inputNameRaw ? inputNameRaw.trim().toLowerCase() : "";
+
+  if (inputName && (inputName in guestList)) {
+    const country = guestList[inputName];
+    // Capitalize first letter just for display nicety:
+    const displayName = inputName.charAt(0).toUpperCase() + inputName.slice(1);
+    console.log(`Hi! I'm ${displayName}, and I'm from ${country}.`);
+  } else {
+    console.log("Hi! I'm a guest.");
+  }
+
+  /* ============================
+     EXERCISE 3 — Playing with numbers
+     Requirements: no built-in helpers; use simple for loops.
+     ============================ */
+  let age = [20, 5, 12, 43, 98, 55];
+
+  console.log("--- EX 3: Playing with numbers ---");
+
+  // 1) Sum of all numbers (no reduce, no built-ins)
+  let sum = 0;
+  for (let i = 0; i < age.length; i++) {
+    sum = sum + age[i];
+  }
+  console.log("Sum ->", sum);
+
+  // 2) Highest age in the array (no Math.max)
+  // Guard for empty array (not needed here, but safe):
+  let max;
+  if (age.length > 0) {
+    max = age[0];
+    for (let i = 1; i < age.length; i++) {
+      if (age[i] > max) {
+        max = age[i];
+      }
+    }
+  }
+  console.log("Highest age ->", max);
+})();
+</script>
+</body>
+</html>
