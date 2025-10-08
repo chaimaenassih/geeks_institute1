@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exercises — BMI & Grade Average (console only)</title>
+</head>
+<body>
+<script>
+"use strict";
+console.clear();
+
+/* =========================================
+   EXERCISE 1 — Checking the BMI
+   Requirements:
+   - Two person objects with: fullName, mass(kg), height(m)
+   - Each object has a method that computes BMI
+   - A function compares both BMIs and displays who has the largest
+   ========================================= */
+
+// Person factory (optional, just to keep things neat)
+function makePerson(fullName, massKg, heightM) {
+  return {
+    fullName,
+    mass: massKg,
+    height: heightM,
+    bmi() {
+      // BMI = mass / height^2
+      return this.mass / (this.height * this.height);
+    }
+  };
+}
+
+// Demo persons (change values to test)
+const alice = makePerson("Alice Walker", 68, 1.65);
+const bob   = makePerson("Bob Carter",   85, 1.80);
+
+// Compares two people by BMI and logs the result
+function compareBMI(p1, p2) {
+  const bmi1 = p1.bmi();
+  const bmi2 = p2.bmi();
+
+  // Round to 2 decimals only for display
+  const r = (x) => Math.round(x * 100) / 100;
+
+  if (bmi1 > bmi2) {
+    console.log(`${p1.fullName} has the larger BMI: ${r(bmi1)} (vs ${r(bmi2)})`);
+    return p1;
+  } else if (bmi2 > bmi1) {
+    console.log(`${p2.fullName} has the larger BMI: ${r(bmi2)} (vs ${r(bmi1)})`);
+    return p2;
+  } else {
+    console.log(`Both have the same BMI: ${r(bmi1)}`);
+    return null;
+  }
+}
+
+console.log("--- EX 1: BMI ---");
+compareBMI(alice, bob);
+
+/* =========================================
+   EXERCISE 2 — Grade Average
+   Requirements:
+   - Function findAvg(gradesList) → console.log average
+   - If average > 65 → "passed", else "failed, must repeat"
+   - Bonus: split into two functions; one calls the other
+   ========================================= */
+
+// Helper: compute average (loop, no built-in reducers)
+function calcAverage(grades) {
+  if (!Array.isArray(grades) || grades.length === 0) return NaN;
+  let sum = 0;
+  for (let i = 0; i < grades.length; i++) {
+    sum += grades[i];
+  }
+  return sum / grades.length;
+}
+
+// Helper: report pass/fail given an average
+function reportPassFail(avg, threshold = 65) {
+  if (Number.isNaN(avg)) {
+    console.log("No grades to average.");
+    return;
+  }
+  console.log(`Average: ${avg.toFixed(2)}`);
+  if (avg > threshold) {
+    console.log("Result: Passed");
+  } else {
+    console.log("Result: Failed — must repeat the course.");
+  }
+}
+
+// Main function (calls the two helpers)
+function findAvg(gradesList) {
+  const avg = calcAverage(gradesList);
+  reportPassFail(avg, 65);
+}
+
+// Demos
+console.log("--- EX 2: Grade Average ---");
+const grades1 = [70, 75, 80, 65]; // should pass
+const grades2 = [50, 60, 55];     // should fail
+findAvg(grades1);
+findAvg(grades2);
+
+// Edge case demo (empty array)
+findAvg([]);
+</script>
+</body>
+</html>
