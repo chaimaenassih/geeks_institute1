@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Challenge — Creating Objects</title>
+</head>
+<body>
+<script>
+"use strict";
+console.clear();
+
+class Video {
+  constructor(title, uploader, time) {
+    this.title = title;
+    this.uploader = uploader;
+    this.time = Number(time) || 0; 
+  }
+  watch() {
+    const msg = `${this.uploader} watched all ${this.time} of ${this.title}!`;
+    console.log(msg);
+    return msg; // (useful if needed)
+  }
+}
+
+/* =========================================================
+   Part 1 — Instantiate a Video and call watch()
+   ========================================================= */
+const v1 = new Video("Intro to JS OOP", "Alice", 420);
+v1.watch(); // "Alice watched all 420 of Intro to JS OOP!"
+
+/* =========================================================
+   Part 2 — Second instance with different values
+   ========================================================= */
+const v2 = new Video("CSS Grid Crash Course", "Bob", 950);
+v2.watch();
+
+const videoData = [
+  { title: "Arrays Explained",           uploader: "Chloe",  time: 300 },
+  { title: "Async/Await Deep Dive",      uploader: "David",  time: 1100 },
+  { title: "Build a Todo App",           uploader: "Elise",  time: 760 },
+  { title: "Node.js CLI in 10 min",      uploader: "Farid",  time: 600 },
+  { title: "Debugging Tips for VS Code", uploader: "Grace",  time: 480 },
+];
+
+// Instantiate all, call watch()
+const videos = videoData.map(({ title, uploader, time }) => new Video(title, uploader, time));
+videos.forEach(v => v.watch());
+
+</script>
+</body>
+</html>
