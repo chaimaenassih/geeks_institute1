@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exercises — Object methods, Destructuring, Classes (console only)</title>
+</head>
+<body>
+<script>
+"use strict";
+console.clear();
+
+/* =========================================================
+   Exercise 1 — printFullName (parameter destructuring)
+   ========================================================= */
+function printFullName({ first, last }) {
+  return `Your full name is ${first} ${last}`;
+}
+console.log("Ex1 ->", printFullName({ first: 'Elie', last:'Schoppik' }));
+// Expected: 'Your full name is Elie Schoppik'
+
+/* =========================================================
+   Exercise 2 — keysAndValues
+   - Return [sortedKeys, correspondingValues]
+   ========================================================= */
+function keysAndValues(obj) {
+  const keys = Object.keys(obj).sort();
+  const values = keys.map(k => obj[k]);
+  return [keys, values];
+}
+// Tests from the prompt:
+console.log("Ex2a ->", keysAndValues({ a: 1, b: 2, c: 3 }));
+console.log("Ex2b ->", keysAndValues({ a: "Apple", b: "Microsoft", c: "Google" }));
+console.log("Ex2c ->", keysAndValues({ key1: true, key2: false, key3: undefined }));
+
+/* =========================================================
+   Exercise 3 — Counter class (what is the output?)
+   ========================================================= */
+class Counter {
+  constructor() {
+    this.count = 0;
+  }
+  increment() {
+    this.count++;
+  }
+}
+
+const counterOne = new Counter();
+counterOne.increment();
+counterOne.increment();
+
+const counterTwo = counterOne; 
+counterTwo.increment();
+
+console.log("Ex3 -> counterOne.count =", counterOne.count); // 3
+
+</script>
+</body>
+</html>
