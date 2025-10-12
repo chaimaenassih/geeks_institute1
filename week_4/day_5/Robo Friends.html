@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RoboFriends</title>
+ 
+  <link href="https://fonts.cdnfonts.com/css/sega-logo-font" rel="stylesheet">
+  <style>
+    :root{
+      
+      --pink:#ec4899;          
+      --pink-strong:#db2777;   
+      --violet:#8b5cf6;        
+      --plum:#2a0e3f;          
+      --ink:#1e1030;           
+      --card:rgba(255,255,255,.06);
+      --shadow:0 10px 20px rgba(0,0,0,.18), 0 6px 6px rgba(0,0,0,.10);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0; color:#f8e9f1; background:var(--plum); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background-image: radial-gradient(#3a184e 1px, transparent 1px), radial-gradient(#3a184e 1px, transparent 1px);
+      background-position:0 0, 15px 15px; background-size:30px 30px;
+    }
+    body{
+      margin:0; color:#111; background:#200f5a; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      /* subtle circuit-like pattern */
+      background-image:
+        radial-gradient(#3a2a83 1px, transparent 1px),
+        radial-gradient(#3a2a83 1px, transparent 1px);
+      background-position:0 0, 15px 15px;
+      background-size:30px 30px;
+    }
+    .container{max-width:1100px; margin-inline:auto; padding:28px 18px 60px}
+
+    header{
+      position:sticky; top:0; z-index:5; backdrop-filter: blur(6px);
+    }
+    .bar{
+      display:flex; align-items:center; gap:18px; padding:14px 16px; border-radius:var(--radius);
+      background:linear-gradient(180deg, var(--pink), var(--pink-strong));
+      box-shadow:var(--shadow);
+    }
+    .logo{
+      font-family:'SEGA LOGO FONT', sans-serif; letter-spacing:3px; font-size:28px; color:#fff0f6; text-shadow:0 1px 0 #bb1d69;
+    }
+    .search{flex:1; position:relative}
+    .search input{
+      width:100%; padding:14px 44px 14px 14px; border-radius:12px; border:0; outline:none; font-size:16px;
+      background:#fff0f6; color:#5b0e2e; box-shadow: inset 0 0 0 2px #bb1d6955;
+    }
+    .search .hint{position:absolute; right:10px; top:50%; translate:0 -50%; font-size:12px; color:#3b6a3e; opacity:.8}
+
+    main{
+      margin-top:28px; background:#3a1657;
+      border-radius:var(--radius); padding:24px; box-shadow:var(--shadow);
+     
+      background-image: linear-gradient(rgba(58,22,87,.8), rgba(58,22,87,.8)), url('circuit-pattern.png');
+      background-repeat: repeat; background-size: 600px auto; background-position: 0 0;
+    }
+
+    .grid{
+      display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:22px;
+    }
+    .card{
+      
+      background-image: linear-gradient(rgba(236,72,153,.12), rgba(236,72,153,.12)), url('card-pattern.png');
+      background-repeat: repeat;
+      background-size: 320px auto; 
+      background-position: 0 0;
+      border:1px solid rgba(236, 72, 153, .45); 
+      border-radius:16px; 
+      padding:18px; 
+      box-shadow:var(--shadow); 
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .card:hover{ 
+      transform: translateY(-4px); 
+      box-shadow: 0 14px 28px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.18);
+      background-image: linear-gradient(rgba(236,72,153,.20), rgba(236,72,153,.20)), url('card-pattern.png');
+      background-size: 320px auto;
+      border-color: rgba(139, 92, 246, .55);
+    }
+    .avatar{
+      width:100%; aspect-ratio:1/1; border-radius:50%; display:block; object-fit:cover; background:#1b1029; border:6px solid #4e2d83; margin-bottom:14px;
+    }
+    .name{font-weight:800; color:#fff6fb; font-size:20px; margin:0 0 6px}
+    .meta{margin:0; color:#ffe5f3cc; font-size:14px}
+    .meta{margin:0; color:#c8e7ffcc; font-size:14px}
+
+    .resultsbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; color:#c4d0ff}
+    .pill{background:#1d2a6a; border:1px solid #5063c7; padding:6px 10px; border-radius:999px; font-size:12px}
+
+    .empty{
+      text-align:center; color:#cbd5e1; padding:40px 10px; font-weight:600; letter-spacing:.3px
+    }
+  .credits{margin-top:18px; font-size:12px; color:#a0b8ff}
+    .credits a{color:#eaffea; text-decoration:underline}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <!-- Using both links provided: Robohash for images; SEGA font from cdnfonts. A reference link to Dafont is included in the footer per requirement. -->
+      <div class="bar">
+        <div class="logo">ROBOFRIENDS</div>
+        <div class="search">
+          <input id="search" type="search" placeholder="Search robots by name…" autocomplete="off" />
+          <span class="hint">/ to focus</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="resultsbar">
+        <div id="count" class="pill">10 robots</div>
+        <div class="pill" id="status">Ready</div>
+      </div>
+      <section id="grid" class="grid" aria-live="polite"></section>
+      <div id="empty" class="empty" hidden>No matches. Try a different name.</div>
+    </main>
+      <p class="credits">Fonts: <a href="https://www.cdnfonts.com/sega-logo-font.font" target="_blank" rel="noreferrer noopener">SEGA Logo Font (cdnfonts)</a> · Reference link: <a href="https://www.dafont.com/sega.font" target="_blank" rel="noreferrer noopener">SEGA on Dafont</a>. Images generated by <a href="https://robohash.org/" target="_blank" rel="noreferrer noopener">robohash.org</a>.</p>
+  </div>
+
+  <script>
+    // --- Assets -------------------------------------------------------------
+    const robots = [
+      { id:1, name:'Leanne Graham', username:'Bret', email:'Sincere@april.biz', image:'https://robohash.org/1?200x200' },
+      { id:2, name:'Ervin Howell', username:'Antonette', email:'Shanna@melissa.tv', image:'https://robohash.org/2?200x200' },
+      { id:3, name:'Clementine Bauch', username:'Samantha', email:'Nathan@yesenia.net', image:'https://robohash.org/3?200x200' },
+      { id:4, name:'Patricia Lebsack', username:'Karianne', email:'Julianne.OConner@kory.org', image:'https://robohash.org/4?200x200' },
+      { id:5, name:'Chelsey Dietrich', username:'Kamren', email:'Lucio_Hettinger@annie.ca', image:'https://robohash.org/5?200x200' },
+      { id:6, name:'Mrs. Dennis Schulist', username:'Leopoldo_Corkery', email:'Karley_Dach@jasper.info', image:'https://robohash.org/6?200x200' },
+      { id:7, name:'Kurtis Weissnat', username:'Elwyn.Skiles', email:'Telly.Hoeger@billy.biz', image:'https://robohash.org/7?200x200' },
+      { id:8, name:'Nicholas Runolfsdottir V', username:'Maxime_Nienow', email:'Sherwood@rosamond.me', image:'https://robohash.org/8?200x200' },
+      { id:9, name:'Glenna Reichert', username:'Delphine', email:'Chaim_McDermott@dana.io', image:'https://robohash.org/9?200x200' },
+      { id:10, name:'Clementina DuBuque', username:'Moriah.Stanton', email:'Rey.Padberg@karina.biz', image:'https://robohash.org/10?200x200' },
+    ];
+
+    // --- DOM references ----------------------------------------------------
+    const $grid = document.getElementById('grid');
+    const $search = document.getElementById('search');
+    const $count = document.getElementById('count');
+    const $empty = document.getElementById('empty');
+    const $status = document.getElementById('status');
+
+    // --- Render helpers -----------------------------------------------------
+    const cardHTML = ({ name, email, image }) => `
+      <article class="card" tabindex="0">
+        <img class="avatar" alt="${name}" loading="lazy" src="${image}"/>
+        <h3 class="name">${name}</h3>
+        <p class="meta">${email}</p>
+      </article>`;
+
+    const render = (list=robots) => {
+      $grid.innerHTML = list.map(cardHTML).join('');
+      $count.textContent = `${list.length} ${list.length === 1 ? 'robot' : 'robots'}`;
+      $empty.hidden = list.length !== 0;
+    };
+
+    // --- Filter logic -------------------------------------------------------
+    const filterByName = (query, items = robots) => {
+      const q = query.trim().toLowerCase();
+      if(!q) return items;
+      return items.filter(({ name }) => name.toLowerCase().includes(q));
+    };
+
+    const onSearch = (e) => {
+      const term = e.target.value;
+      $status.textContent = term ? `Filtering: "${term}"` : 'Ready';
+      render(filterByName(term));
+    };
+
+    // keyboard focus shortcut: press '/' to focus the search
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === '/' && document.activeElement !== $search){ e.preventDefault(); $search.focus(); }
+    });
+
+    $search.addEventListener('input', onSearch);
+
+    render();
+  </script>
+</body>
+</html>
