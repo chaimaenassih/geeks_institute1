@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tic Tac Toe – AI (Easy/Hard)</title>
+  <style>
+    :root {
+    
+      --bg1:#a47148; --bg2:#8d5e3c; 
+      --board:#2c1d14;            
+      --tile:#4a3326;          
+      --tile2:#5c3b2a;            
+      --line:#000000;             
+      --text:#f6ead8;             
+      --muted:#f1e3c6;
+      --win:#d0b665; --lose:#1a1a1a; --tie:#b8895b;
+    }
+    *{box-sizing:border-box}
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;margin:0;display:grid;place-items:center;min-height:100vh;
+      /* CSS-only wood texture */
+      background:
+        radial-gradient(100px 40px at 10% 15%, rgba(0,0,0,.08), rgba(0,0,0,0)),
+        radial-gradient(120px 50px at 70% 40%, rgba(0,0,0,.07), rgba(0,0,0,0)),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255,255,255,.06) 0px,
+          rgba(255,255,255,.06) 6px,
+          rgba(0,0,0,.06) 6px,
+          rgba(0,0,0,.06) 12px
+        ),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+    }
+    .card{background:rgba(32,22,16,.85);backdrop-filter: blur(2px);color:var(--text);padding:1.25rem 1.25rem 1.5rem;border-radius:18px;width:min(680px,92vw);box-shadow:0 25px 60px rgba(0,0,0,.5);border:1px solid rgba(0,0,0,.6)}
+    h1{margin:.2rem 0 1rem;font-weight:800;text-align:center;letter-spacing:.3px;color:var(--text)}
+    .topbar{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:.5rem 0 1rem}
+    .btn{appearance:none;border:1px solid #000;background:#3a281e;color:var(--text);padding:.6rem .9rem;border-radius:12px;font-weight:700;cursor:pointer;transition:transform .05s ease,opacity .2s ease, background .2s ease;box-shadow:inset 0 -2px rgba(0,0,0,.25)}
+    .btn:hover{transform:translateY(-1px)}
+    .btn[aria-pressed="true"], .btn.active{outline:3px solid rgba(255,255,255,.15);background:#2c2018}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .muted{opacity:.9;font-weight:600}
+
+    .board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:var(--board);padding:8px;border-radius:14px;margin:0 auto;max-width:420px;border:2px solid var(--line)}
+    .cell{position:relative;display:grid;place-items:center;aspect-ratio:1/1;background:linear-gradient(180deg,var(--tile),var(--tile2));border-radius:10px;font-size:clamp(42px,7.6vw,70px);font-weight:900;color:var(--text);cursor:pointer;user-select:none;border:2px solid var(--line)}
+    .cell:empty::after{content:"";position:absolute;inset:0;border:3px dashed rgba(0,0,0,.25);border-radius:8px}
+    .cell.win{background:linear-gradient(180deg, rgba(208,182,101,.35), rgba(208,182,101,.15));box-shadow:0 0 0 2px var(--win) inset}
+
+    .hud{display:flex;justify-content:space-between;align-items:center;margin:.9rem 0 .3rem;gap:.5rem;flex-wrap:wrap}
+    .status{font-weight:800;color:var(--text)}
+    .pill{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .6rem;border-radius:9999px;background:#3a281e;border:1px solid #000}
+    .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:rgba(0,0,0,.35);padding:.05rem .35rem;border-radius:6px;color:var(--muted)}
+
+    .footer{display:flex;justify-content:center;margin-top:1rem}
+    .restart{display:none}
+    .restart.show{display:inline-block}
+    .toast{margin-left:.6rem;font-weight:800;color:var(--text)}
+  </style>
+</head>
+<body>
+  <main class="card" role="application" aria-label="Tic Tac Toe">
+    <h1>Tic Tac Toe Game</h1>
+
+    <div class="topbar" aria-label="Selections">
+      <button class="btn" id="pickX">Play as X</button>
+      <button class="btn" id="pickO">Play as O</button>
+      <span class="pill"><span class="muted">Mode:</span>
+        <button class="btn" id="easy" aria-pressed="true">Easy</button>
+        <button class="btn" id="hard" aria-pressed="false">Hard</button>
+      </span>
+    </div>
+
+    <section class="hud">
+      <div class="status" id="status">Pick X or O to start.</div>
+      <div class="pill"><span>Keys</span>
+        <span class="kbd">R</span>
+        <span class="kbd">E</span>/<span class="kbd">H</span>
+      </div>
+    </section>
+
+    <section class="board" id="board" aria-live="polite"></section>
+
+    <div class="footer">
+      <button id="restart" class="btn restart">Restart</button>
+      <span id="toast" class="toast"></span>
+    </div>
+  </main>
+
+  <script>
+    // --- State
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('status');
+    const restartBtn = document.getElementById('restart');
+    const toastEl = document.getElementById('toast');
+
+    const pickXBtn = document.getElementById('pickX');
+    const pickOBtn = document.getElementById('pickO');
+    const easyBtn = document.getElementById('easy');
+    const hardBtn = document.getElementById('hard');
+
+    const winCombos = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[6,4,2]
+    ];
+
+    let board = Array(9).fill('');
+    let human = null; // 'X' | 'O'
+    let ai = null;    // 'X' | 'O'
+    let gameOver = false;
+    let hardMode = false; 
+
+    // --- Helpers
+    const emptyIndices = b => b.map((v,i)=> v?null:i).filter(i=>i!==null);
+
+    const setMode = hard => {
+      hardMode = hard;
+      easyBtn.setAttribute('aria-pressed', String(!hard));
+      hardBtn.setAttribute('aria-pressed', String(hard));
+      notify(`Mode: ${hard? 'Hard (unbeatable)':'Easy (random)'}`);
+    };
+
+    const notify = (msg, kind='') => {
+      toastEl.textContent = msg;
+      toastEl.style.color = kind==='win'? 'var(--win)' : kind==='lose'? 'var(--lose)' : kind==='tie'? 'var(--tie)' : '#fff';
+      setTimeout(()=> toastEl.textContent = '', 2200);
+    };
+
+    const render = () => {
+      boardEl.innerHTML = '';
+      board.forEach((val, idx) => {
+        const cell = document.createElement('button');
+        cell.className = 'cell';
+        cell.id = `cell-${idx}`;
+        cell.dataset.index = idx;
+        cell.textContent = val;
+        cell.disabled = !!val || gameOver || !human;
+        boardEl.appendChild(cell);
+      });
+    };
+
+    const reset = () => {
+      board = Array(9).fill('');
+      gameOver = false; restartBtn.classList.remove('show');
+      statusEl.textContent = human ? `${human}'s turn` : 'Pick X or O to start.';
+      render();
+    };
+
+    // --- Win / Tie detection
+    const getWinner = (b) => {
+      for (const [a,b2,c] of winCombos){
+        if (b[a] && b[a]===b[b2] && b[a]===b[c]) return b[a];
+      }
+      return null;
+    };
+
+    const markWinningLine = (b) => {
+      for (const combo of winCombos){
+        const [a,b2,c] = combo;
+        if (board[a] && board[a]===board[b2] && board[a]===board[c]){
+          for (const i of combo){
+            document.getElementById(`cell-${i}`).classList.add('win');
+          }
+        }
+      }
+    };
+
+    const isTie = b => emptyIndices(b).length===0 && !getWinner(b);
+
+    // --- Minimax (Hard mode – unbeatable)
+    const minimax = (newBoard, player) => {
+      const avail = emptyIndices(newBoard);
+      const winner = getWinner(newBoard);
+      if (winner === ai)   return { score: 10 };
+      if (winner === human) return { score: -10 };
+      if (avail.length === 0) return { score: 0 };
+
+      const moves = avail.map(index => {
+        const move = { index };
+        newBoard[index] = player;
+        move.score = minimax(newBoard, player===ai? human: ai).score;
+        newBoard[index] = '';
+        return move;
+      });
+
+      // choose best for current player
+      const best = (player===ai)
+        ? moves.reduce((best,m)=> m.score>best.score? m:best )
+        : moves.reduce((best,m)=> m.score<best.score? m:best );
+      return best;
+    };
+
+    // --- AI move
+    const aiTurn = () => {
+      if (gameOver) return;
+      const empties = emptyIndices(board);
+      if (empties.length===0) return;
+
+      let index;
+      if (!hardMode){
+        // Easy: random move
+        index = empties[(Math.random()*empties.length)|0];
+      } else {
+        // Hard: minimax
+        index = minimax([...board], ai).index;
+      }
+      board[index] = ai;
+      document.getElementById(`cell-${index}`).textContent = ai;
+      document.getElementById(`cell-${index}`).disabled = true;
+
+      const winner = getWinner(board);
+      if (winner){
+        endGame(winner);
+      } else if (isTie(board)){
+        endGame(null);
+      } else {
+        statusEl.textContent = `${human}'s turn`;
+      }
+    };
+
+    const endGame = (winner) => {
+      gameOver = true;
+      restartBtn.classList.add('show');
+      if (winner){
+        markWinningLine(board);
+        const youWin = winner===human;
+        statusEl.textContent = `${winner} wins!`;
+        notify(youWin? 'You win!':'Computer wins', youWin? 'win':'lose');
+      } else {
+        statusEl.textContent = 'Tie game';
+        notify('Tie game', 'tie');
+      }
+      // disable remaining cells
+      board.forEach((v,i)=>{
+        const c = document.getElementById(`cell-${i}`); if (c) c.disabled = true;
+      });
+    };
+
+    // --- Event handlers
+    boardEl.addEventListener('click', e => {
+      const cell = e.target.closest('.cell');
+      if (!cell) return;
+      const i = Number(cell.dataset.index);
+      if (board[i] || gameOver || !human) return;
+      board[i] = human; cell.textContent = human; cell.disabled = true;
+
+      const winner = getWinner(board);
+      if (winner){ endGame(winner); return; }
+      if (isTie(board)){ endGame(null); return; }
+
+      statusEl.textContent = `Computer's turn`;
+      // slight delay for UX
+      setTimeout(aiTurn, 200);
+    });
+
+    restartBtn.addEventListener('click', reset);
+
+    pickXBtn.addEventListener('click', ()=>{
+      if (human==='X') return;
+      [human, ai] = ['X','O'];
+      pickXBtn.classList.add('active'); pickOBtn.classList.remove('active');
+      notify('You are X. You start.');
+      reset();
+    });
+
+    pickOBtn.addEventListener('click', ()=>{
+      if (human==='O') return;
+      [human, ai] = ['O','X'];
+      pickOBtn.classList.add('active'); pickXBtn.classList.remove('active');
+      notify('You are O. Computer starts.');
+      reset();
+      // AI makes first move in center for hard mode, random otherwise
+      setTimeout(()=> aiTurn(), 250);
+    });
+
+    easyBtn.addEventListener('click', ()=> setMode(false));
+    hardBtn.addEventListener('click', ()=> setMode(true));
+
+    window.addEventListener('keydown', (e)=>{
+      if (e.key.toLowerCase()==='r') reset();
+      if (e.key.toLowerCase()==='e') setMode(false);
+      if (e.key.toLowerCase()==='h') setMode(true);
+    });
+
+    render();
+    statusEl.textContent = 'Pick X or O to start.';
+  </script>
+</body>
+</html>
