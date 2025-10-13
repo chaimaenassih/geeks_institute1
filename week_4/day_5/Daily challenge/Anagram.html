@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Anagrammes</title>
+  <style>
+    :root {
+      background-color: #f8a5d4;
+      --card: #faa8e5;    
+      --card-accent: #ee8bdc;
+      --text: #000000;    
+      --muted: #000000;   
+      --ok: #1f7e17;
+      --ko: #fa1010;
+      --chip: #f0c1ff;
+      --field: #f8cee0;         
+      --field-focus: #ffd4ea;   
+      --result: #f7c3ef;        
+      --border: #ed7dcd;
+      --shadow: rgba(172, 9, 123, 0.28);
+      --btn-grad-a: #f59ed2;    
+      --btn-grad-b: #fa94f0;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans";
+      background:
+        radial-gradient(1100px 700px at 80% -20%, var(--bg2) 0%, transparent 60%),
+        radial-gradient(900px 600px at -20% 120%, var(--bg1) 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg3), var(--bg1));
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 720px;
+      background: var(--card);
+      border: 1px solid var(--card-accent);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 18px 40px var(--shadow);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.15;
+      color: var(--text);            
+      font-weight: 800;
+      letter-spacing: .3px;
+    }
+
+    p.lead {
+      margin: 0 0 20px;
+      color: var(--muted);
+    }
+
+    .grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .grid { grid-template-columns: 1fr 1fr; } }
+
+    label {
+      display: block;
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--field);
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    input[type="text"]::placeholder { color: rgba(0,0,0,0.85); } /* placeholder noir */
+    input[type="text"]:focus {
+      border-color: var(--accent1);
+      box-shadow: 0 0 0 4px rgba(243, 155, 214, 0.25);
+      background: var(--field-focus);
+    }
+
+    .actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button, .ghost {
+      cursor: pointer;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      color: #000; 
+      background: linear-gradient(180deg, var(--btn-grad-a), var(--btn-grad-b));
+      transition: transform .06s ease, filter .2s ease, box-shadow .2s ease;
+      box-shadow: 0 8px 18px rgba(231, 143, 210, 0.35);
+    }
+    button:hover, .ghost:hover { filter: brightness(1.04); }
+    button:active, .ghost:active { transform: translateY(1px); }
+
+    .result {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: var(--result);
+      border: 1px dashed var(--border);
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      color: var(--text);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      border: 1px solid transparent;
+      color: #000; 
+    }
+    .ok { background: var(--badge-ok); border-color: rgba(57, 199, 165, .45); }
+    .ko { background: var(--badge-ko); border-color: rgba(240, 99, 99, .4); }
+
+    .examples {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--card-accent);
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .examples code {
+      display: inline-block;
+      background: var(--chip);
+      border: 1px solid var(--card-accent);
+      padding: 4px 8px;
+      border-radius: 8px;
+      color: var(--text);
+      margin: 2px 0;
+    }
+    .footer { display: none !important; }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="title">
+    <h1 id="title">Anagrammes</h1>
+    <p class="lead">Entrez deux chaînes. Les espaces seront ignorés et la comparaison est insensible à la casse.</p>
+
+    <div class="grid" role="group" aria-label="Champs d'entrée">
+      <div>
+        <label for="s1">Chaîne 1</label>
+        <input id="s1" type="text" placeholder="Astronomer" autocomplete="off" />
+      </div>
+      <div>
+        <label for="s2">Chaîne 2</label>
+        <input id="s2" type="text" placeholder="Moon starer" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="checkBtn" type="button">Vérifier</button>
+      <button id="clearBtn" type="button" class="ghost">Effacer</button>
+      <button id="fillBtn" type="button" class="ghost">Exemple</button>
+    </div>
+
+    <div id="result" class="result" aria-live="polite">
+      <span class="muted">Le résultat apparaîtra ici.</span>
+    </div>
+
+    <div class="examples">
+      <div>Exemples d’anagrammes :</div>
+      <div><code>"Astronomer"</code> ↔ <code>"Moon starer"</code></div>
+      <div><code>"School master"</code> ↔ <code>"The classroom"</code></div>
+      <div><code>"The Morse Code"</code> ↔ <code>"Here come dots"</code></div>
+    </div>
+  </main>
+
+  <script>
+   
+    const $ = (sel) => document.querySelector(sel);
+
+    const normalize = (str) =>
+      str.toLowerCase().replace(/\s+/g, "").split("").sort().join("");
+
+    function isAnagram(a, b) { return normalize(a) === normalize(b); }
+
+    function isAnagramFast(a, b) {
+      const clean = (s) => s.toLowerCase().replace(/\s+/g, "");
+      const s1 = clean(a), s2 = clean(b);
+      if (s1.length !== s2.length) return false;
+      const counts = {};
+      for (const ch of s1) counts[ch] = (counts[ch] || 0) + 1;
+      for (const ch of s2) { if (!counts[ch]) return false; counts[ch]--; }
+      return true;
+    }
+
+    const s1 = $("#s1"), s2 = $("#s2"), out = $("#result");
+    const checkBtn = $("#checkBtn"), clearBtn = $("#clearBtn"), fillBtn = $("#fillBtn");
+
+    function renderResult(ok, a, b) {
+      out.innerHTML = "";
+      const badge = document.createElement("span");
+      badge.className = "badge " + (ok ? "ok" : "ko");
+      badge.textContent = ok ? "Anagrammes ✅" : "Pas anagrammes ❌";
+
+      const text = document.createElement("span");
+      text.innerHTML = ok
+        ? `"<strong>${a}</strong>" est un anagramme de "<strong>${b}</strong>".`
+        : `"<strong>${a}</strong>" n’est pas un anagramme de "<strong>${b}</strong>".`;
+
+      out.appendChild(badge);
+      out.appendChild(text);
+    }
+
+    function verify() {
+      const a = s1.value.trim();
+      const b = s2.value.trim();
+      if (!a || !b) {
+        out.innerHTML = '<span class="muted">Veuillez remplir les deux champs.</span>';
+        return;
+      }
+      const ok = isAnagram(a, b); 
+      renderResult(ok, a, b);
+    }
+
+    function clearAll() {
+      s1.value = ""; s2.value = "";
+      out.innerHTML = '<span class="muted">Le résultat apparaîtra ici.</span>';
+      s1.focus();
+    }
+
+    function fillExample() {
+      s1.value = "The Morse Code";
+      s2.value = "Here come dots";
+      verify();
+    }
+
+    checkBtn.addEventListener("click", verify);
+    clearBtn.addEventListener("click", clearAll);
+    fillBtn.addEventListener("click", fillExample);
+
+    [s1, s2].forEach(el => el.addEventListener("input", () => {
+      if (s1.value.trim() && s2.value.trim()) verify();
+      else out.innerHTML = '<span class="muted">Le résultat apparaîtra ici.</span>';
+    }));
+    [s1, s2].forEach(el => el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") verify();
+    }));
+  </script>
+</body>
+</html>
