@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HTTP & Forms + JSON — Exercises</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root { --bg:#0f172a; --card:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#a78bfa; --line:#1f2937; }
+    html,body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:#0b1220; color:var(--ink); }
+    .wrap { max-width: 920px; margin: 40px auto; padding: 0 16px 64px; }
+    h1 { font-size: 28px; margin: 0 0 16px; }
+    h2 { font-size: 22px; margin: 28px 0 12px; color:#f3f4f6; }
+    p, li, code, pre, small, label { font-size: 15px; line-height: 1.5; color:var(--ink); }
+    .card { background: linear-gradient(180deg,#0b1220 0%, #0b1220 30%, #0c1426 100%); border:1px solid #1f2937; border-radius: 14px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+    .grid { display:grid; gap:16px; }
+    .grid-cols { grid-template-columns: 1fr; }
+    @media (min-width: 800px) { .grid-cols { grid-template-columns: 1fr 1fr; } }
+    input[type="text"], textarea {
+      width: 100%; box-sizing: border-box;
+      border:1px solid var(--line); background:#0a1020; color:var(--ink);
+      padding: 10px 12px; border-radius: 10px; outline: none;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .btn {
+      appearance:none; border:none; background: var(--accent); color:#0a0a0a;
+      padding: 10px 14px; border-radius: 10px; font-weight: 700; cursor: pointer;
+    }
+    .muted { color: var(--muted); }
+    pre { background:#0a1020; padding:14px; border-radius:10px; border:1px solid var(--line); overflow:auto; }
+    .answer { font-size:14px; color:#cbd5e1; background: #0b1022; border:1px dashed #243142; padding:10px; border-radius:10px; }
+    .tag { display:inline-block; border:1px solid #243142; background:#0b1022; border-radius:999px; padding:2px 8px; font-size:12px; color:#a5b4fc; }
+    .divider { height:1px; background:#13203a; margin:18px 0; }
+    kbd { background:#111827; border:1px solid #1f2937; border-bottom-width:2px; border-radius:6px; padding:2px 6px; font-size:12px; }
+
+    #json-compact {
+      white-space: pre-wrap;   
+      word-break: break-word;  
+      overflow-wrap: anywhere; 
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Exercise 1 : HTML Form (GET) -->
+    <section class="card">
+      <h2>Exercise 1 : HTML Form (GET)</h2>
+      <p class="muted">Submit with <span class="tag">method="GET"</span>. Using the same page as the <code>action</code> URL.</p>
+
+      <form id="form-get" action="" method="get" class="grid">
+        <div>
+          <label for="name">Name (small text input)</label><br/>
+          <input id="name" name="name" type="text" placeholder="Ada Lovelace" required />
+        </div>
+        <div>
+          <label for="message">Message (textarea)</label><br/>
+          <textarea id="message" name="message" placeholder="Write a short message..."></textarea>
+        </div>
+        <div class="row">
+          <input type="submit" value="Send (GET)" class="btn" />
+          <small class="muted">On submit, query parameters will appear in the URL.</small>
+        </div>
+      </form>
+
+      <div class="divider"></div>
+
+      <div>
+        <strong>Where will the sent data appear?</strong>
+        <div class="answer">
+          For <b>GET</b>, the data is appended to the URL as a query string (e.g. <code>?name=Ada&message=Hello</code>). You can also see it in DevTools &rarr; Network &rarr; the request's <i>Query String Parameters</i>.
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <details>
+          <summary><b>Parsed GET values on this page</b> (auto-filled from <code>location.search</code>)</summary>
+          <pre id="get-output">No GET parameters yet.</pre>
+        </details>
+      </div>
+    </section>
+
+    <br/>
+
+    <!-- Exercise 2 : HTML Form #2 (POST) -->
+    <section class="card">
+      <h2>Exercise 2 : HTML Form #2 (POST)</h2>
+      <p class="muted">Submit with <span class="tag">method="POST"</span>. Using the same page as the <code>action</code> URL.</p>
+
+      <form id="form-post" action="" method="post" class="grid">
+        <div>
+          <label for="name2">Name (small text input)</label><br/>
+          <input id="name2" name="name" type="text" placeholder="Grace Hopper" required />
+        </div>
+        <div>
+          <label for="message2">Message (textarea)</label><br/>
+          <textarea id="message2" name="message" placeholder="Write a short message..."></textarea>
+        </div>
+        <div class="row">
+          <input type="submit" value="Send (POST)" class="btn" />
+          <label class="row" style="gap:6px; align-items:center;">
+            <input type="checkbox" id="intercept" />
+            <span class="muted">Intercept locally (don’t navigate)</span>
+          </label>
+        </div>
+      </form>
+
+      <div class="divider"></div>
+
+      <div>
+        <strong>Where will the sent data appear?</strong>
+        <div class="answer">
+          For <b>POST</b>, the data is sent in the <i>request body</i>. Open DevTools (<kbd>F12</kbd>), go to the <b>Network</b> tab, click the POST request, then check:
+          <ul>
+            <li><b>Headers</b> → <i>Form Data</i> (or Request Payload)</li>
+            <li><b>Payload</b> tab (depending on browser)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <details>
+          <summary><b>Locally intercepted POST values</b> (shown when “Intercept locally” is checked)</summary>
+          <pre id="post-output">No POST submission intercepted yet.</pre>
+        </details>
+      </div>
+    </section>
+
+    <br/>
+
+    <!-- Exercise 3 : JSON Mario -->
+    <section class="card">
+      <h2>Exercise 3 : JSON Mario</h2>
+      <p class="muted">Convert the JS object to JSON (compact and pretty), and inspect with a breakpoint.</p>
+
+      <div class="grid grid-cols">
+        <div>
+          <strong>Original JS object</strong>
+          <pre id="js-object"></pre>
+        </div>
+        <div>
+          <strong>JSON (compact)</strong>
+          <pre id="json-compact"></pre>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <strong>JSON (pretty printed)</strong>
+        <pre id="json-pretty"></pre>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="answer">
+        <strong>What happens to the nested objects?</strong><br/>
+        They are preserved as nested JSON objects with the same key structure. (Only serializable values are kept; functions/undefined/symbols would be omitted, but this object contains only strings and numbers.)
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="btn" id="debugger-btn" type="button">Trigger <code>debugger</code> & inspect JSON</button>
+        <small class="muted">Click the button, the script hits a <code>debugger;</code> statement. Open DevTools to examine variables.</small>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // =========================
+    // Exercise 1 (GET) helpers
+    // =========================
+    (function handleGet() {
+      const out = document.getElementById('get-output');
+      const params = new URLSearchParams(window.location.search);
+      if ([...params].length === 0) {
+        out.textContent = 'No GET parameters yet.';
+        return;
+      }
+      const obj = {};
+      params.forEach((v, k) => { obj[k] = v; });
+      out.textContent = JSON.stringify(obj, null, 2);
+      // Prefill inputs from URL for convenience
+      const name = params.get('name');
+      const message = params.get('message');
+      if (name) document.getElementById('name').value = name;
+      if (message) document.getElementById('message').value = message;
+    })();
+
+    // ==========================
+    // Exercise 2 (POST) helpers
+    // ==========================
+    (function handlePost() {
+      const form = document.getElementById('form-post');
+      const intercept = document.getElementById('intercept');
+      const out = document.getElementById('post-output');
+
+      form.addEventListener('submit', (e) => {
+        const fd = new FormData(form);
+        const obj = {};
+        for (const [k,v] of fd.entries()) obj[k] = v;
+        console.log('[POST] FormData that will be submitted:', obj);
+
+        if (intercept.checked) {
+          e.preventDefault(); // keep us on the page
+          out.textContent = JSON.stringify(obj, null, 2);
+        }
+      });
+    })();
+
+    // =========================
+    // Exercise 3 : JSON Mario
+    // =========================
+    const marioGame = {
+      detail : "An amazing game!",
+      characters : {
+        mario : {
+          description: "Small and jumpy. Likes princesses.",
+          height: 10,
+          weight: 3,
+          speed: 12,
+        },
+        bowser : {
+          description: "Big and green, Hates princesses.",
+          height: 16,
+          weight: 6,
+          speed: 4,
+        },
+        princessPeach : {
+          description: "Beautiful princess.",
+          height: 12,
+          weight: 2,
+          speed: 2,
+        }
+      },
+    };
+
+    // Convert to JSON (compact)
+    const jsonCompact = JSON.stringify(marioGame);
+    // Convert to JSON (pretty)
+    const jsonPretty = JSON.stringify(marioGame, null, 2);
+
+    document.getElementById('js-object').textContent =
+`const marioGame = ${JSON.stringify(marioGame, null, 2)};`;
+    document.getElementById('json-compact').textContent = jsonCompact;
+    document.getElementById('json-pretty').textContent = jsonPretty;
+
+    document.getElementById('debugger-btn').addEventListener('click', () => {
+      const dataForDebugger = {
+        original: marioGame,
+        asJSON_compact: jsonCompact,
+        asJSON_pretty: jsonPretty
+      };
+      debugger;
+      console.log('Inspect this object in the debugger:', dataForDebugger);
+      alert('Debugger triggered. Open DevTools to inspect variables.');
+    });
+  </script>
+</body>
+</html>
