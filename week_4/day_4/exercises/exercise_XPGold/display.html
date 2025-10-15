@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exercise 1 — HTML Form #3 (Receiver)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#ffe7fb;
+      --card:#0f172a;
+      --ink:#000000;
+      --muted:#0a0a0a;
+      --accent:#daa6c5;
+      --line:#0e0e0e;
+      --ok:#22c55e;
+      --warn:#f59e0b;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    .wrap{min-height:100dvh;display:grid;place-items:center;padding:24px}
+    .card{
+      width:min(720px,100%);
+      background:linear-gradient(180deg,#daa6c5 0%, #e3bcd7 60%, #f4b3e3 100%);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:24px;
+      box-shadow:0 16px 50px rgba(248, 169, 228, 0.35);
+    }
+    h1{font-size:24px;margin:0 0 10px}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    section#result{
+      margin-top:10px;
+      border:1px solid #0b0b0b;
+      background:#f2bce7;
+      border-radius:12px;
+      padding:16px;
+    }
+    .pill{
+      display:inline-block;
+      padding:4px 10px;border-radius:999px;
+      border:1px solid #000000;background:#f5cbe4;
+      color:#000000;font-size:12px;margin-right:8px;
+    }
+    .row{display:grid;gap:10px;margin-top:8px}
+    @media(min-width:560px){ .row{grid-template-columns:1fr 1fr} }
+    .kv{
+      border:1px solid #1d2845;border-radius:10px;padding:12px;background:#f5cbe4
+    }
+    .kv b{display:block;color:#050505;font-size:12px;margin-bottom:4px}
+    .actions{margin-top:16px}
+    a.btn{
+      display:inline-block;background:var(--accent);color:#020202;
+      padding:10px 14px;border-radius:12px;font-weight:700;text-decoration:none
+    }
+    a.btn:hover{filter:brightness(1.06)}
+    .empty{color:#fcd34d}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card" role="region" aria-labelledby="title">
+      <h1 id="title">Received Data</h1>
+      <p class="lead">Affichage des données envoyées depuis le formulaire, directement dans ce <code>&lt;section&gt;</code> grâce au DOM.</p>
+
+      <!-- Exigence : afficher dans un <section> en utilisant le DOM -->
+      <section id="result">Waiting for data…</section>
+
+      <div class="actions">
+        <a class="btn" href="form3.html">← Back to the form</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Récupérer les paramètres de l'URL (GET)
+    const params = new URLSearchParams(location.search);
+    const name = (params.get('name') || '').trim();
+    const lastname = (params.get('lastname') || '').trim();
+
+    // Cibler la section d’affichage
+    const section = document.getElementById('result');
+
+    // Nettoyage du contenu par défaut
+    section.textContent = '';
+
+    if (name || lastname) {
+      // Petits indicateurs
+      const pills = document.createElement('div');
+      pills.innerHTML = `<span class="pill">DOM update</span><span class="pill">from URLSearchParams</span>`;
+      section.appendChild(pills);
+
+      // Message d'accueil
+      const p = document.createElement('p');
+      p.style.margin = '12px 0';
+      p.textContent = `Hello ${name} ${lastname} !`;
+      section.appendChild(p);
+
+      // Grille clé/valeur
+      const row = document.createElement('div');
+      row.className = 'row';
+
+      const kv1 = document.createElement('div');
+      kv1.className = 'kv';
+      kv1.innerHTML = `<b>Name</b><div>${name || '<span class="empty">—</span>'}</div>`;
+
+      const kv2 = document.createElement('div');
+      kv2.className = 'kv';
+      kv2.innerHTML = `<b>Lastname</b><div>${lastname || '<span class="empty">—</span>'}</div>`;
+
+      row.appendChild(kv1);
+      row.appendChild(kv2);
+      section.appendChild(row);
+    } else {
+      // Aucun paramètre : message d’aide
+      const warn = document.createElement('p');
+      warn.innerHTML = `Aucune donnée trouvée. Retourne au formulaire pour envoyer <em>name</em> et <em>lastname</em>.`;
+      section.appendChild(warn);
+    }
+  </script>
+</body>
+</html>
