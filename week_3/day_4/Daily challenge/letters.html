@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Challenge — Letters Only</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:24px}
+    label{display:block;margin-bottom:8px}
+    input[type="text"]{padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;min-width:260px}
+    small{display:block;color:#475569;margin-top:6px}
+    .bad{color:#dc2626;font-weight:600}
+  </style>
+</head>
+<body>
+  <h1>Letters only</h1>
+
+  <label for="letters">Enter letters:</label>
+  <input id="letters" type="text" placeholder="Type here…" autocomplete="off" />
+  <small>Only letters are allowed (A–Z, a–z, spaces, and accents). Other characters will be removed.</small>
+  <small id="feedback"></small>
+
+  <script>
+    // Allow letters (ASCII + accents), spaces and optional apostrophes
+    // - [A-Za-z] basic Latin letters
+    // - À-ÖØ-öø-ÿ covers most Latin-1 accented letters
+    // - allow space and apostrophe
+    const allowed = /[^A-Za-zÀ-ÖØ-öø-ÿ'\s]/g;
+
+    const input = document.getElementById('letters');
+    const fb = document.getElementById('feedback');
+
+    // Use the 'input' event to sanitize content (also catches paste)
+    input.addEventListener('input', () => {
+      const before = input.value;
+      const after  = before.replace(allowed, '');
+      if (before !== after) {
+        input.value = after;  
+        fb.textContent = 'Disallowed characters were removed.';
+        fb.className = 'bad';
+      } else {
+        fb.textContent = '';
+        fb.className = '';
+      }
+    });
+
+    // (Optional) Block invalid keys at the keyboard level
+    input.addEventListener('keydown', (e) => {
+      // Let control/navigation keys through
+      const controlKeys = ['Backspace','Delete','Tab','Enter','Escape','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'];
+      if (controlKeys.includes(e.key) || (e.ctrlKey || e.metaKey)) return;
+
+      if (!/^[A-Za-zÀ-ÖØ-öø-ÿ'\s]$/.test(e.key)) {
+        e.preventDefault();
+        fb.textContent = 'Letters only are allowed.';
+        fb.className = 'bad';
+      }
+    });
+  </script>
+</body>
+</html>
