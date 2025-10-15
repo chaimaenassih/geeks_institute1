@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DOM Timer + Move Box — All Exercises (fixed)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    
+    #container-timer p {
+     
+      color: rgb(5, 5, 5);
+      margin: 6px 0;
+      padding: 4px 6px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 20px; color:#0f172a; }
+    h1 { margin: 12px 0; }
+    h2 { margin: 16px 0 8px; }
+    hr { margin: 24px 0; }
+    button { cursor: pointer; }
+
+    #container-move {
+      width: 400px;
+      height: 400px;
+      position: relative;
+      background: rgb(255, 255, 135);
+      margin-top: 10px;
+    }
+    #animate {
+      width: 50px;
+      height: 50px;
+      position: absolute;
+      background-color: red;
+      left: 0;
+      top: 0;
+    }
+
+    .controls { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 12px; }
+  </style>
+</head>
+<body>
+
+  <!-- =======================
+       EXERCISE 1: TIMER
+       ======================= -->
+  <section aria-labelledby="timer-title">
+    <h1 id="timer-title">Exercise 1: Timer</h1>
+
+    <!-- Zone où les <p>Hello World</p> seront ajoutés -->
+    <div id="container-timer"></div>
+
+    <div class="controls">
+      <button id="clear">Clear Interval</button>
+      <button id="clearMsgs" title="Supprime tous les paragraphes du timer">Clear Messages</button>
+    </div>
+
+   
+  </section>
+
+  <hr>
+
+  <!-- =======================
+       EXERCISE 2: MOVE THE BOX
+       ======================= -->
+  <section aria-labelledby="move-title">
+    <h1 id="move-title">Exercise 2: Move the box</h1>
+
+    <p><button id="moveBtn">Click Me</button></p>
+    <div id="container-move">
+      <div id="animate"></div>
+    </div>
+  </section>
+
+  <script>
+    // ===========================
+    // EXERCISE 1: TIMER (I/II/III)
+    // ===========================
+    (function timerExercise() {
+      const container = document.getElementById('container-timer');
+      const clearBtn = document.getElementById('clear');
+      const clearMsgsBtn = document.getElementById('clearMsgs');
+
+      // Part I : alert "Hello World" après 2s
+      setTimeout(function () {
+        alert("Hello World");
+      }, 2000);
+
+      // Part II : ajouter <p>Hello World</p> après 2s
+      setTimeout(function () {
+        const p = document.createElement('p');
+        p.textContent = 'Hello World';
+        container.appendChild(p);
+      }, 2000);
+
+      // Part III : toutes les 2s, ajouter un <p>Hello World</p>
+      // Stop via bouton OU quand il y a 5 <p> dans le container.
+      let intervalId = setInterval(function () {
+        const p = document.createElement('p');
+        p.textContent = 'Hello World';
+        container.appendChild(p);
+
+        const count = container.querySelectorAll('p').length;
+        if (count >= 5) {
+          clearInterval(intervalId);
+        }
+      }, 2000);
+
+      // Arrêt manuel de l'intervalle
+      clearBtn.addEventListener('click', function () {
+        clearInterval(intervalId);
+      });
+
+      // (Optionnel) Supprimer les paragraphes jaunes déjà ajoutés
+      clearMsgsBtn.addEventListener('click', function () {
+        container.innerHTML = '';
+      });
+    })();
+
+    // ===========================
+    // EXERCISE 2: MOVE THE BOX
+    // ===========================
+    (function moveBoxExercise() {
+      let moveInterval = null;
+
+      function myMove() {
+        const box = document.getElementById('animate');
+        const container = document.getElementById('container-move');
+
+        if (moveInterval) clearInterval(moveInterval);
+        box.style.left = '0px';
+
+        const maxLeft = container.clientWidth - box.offsetWidth; // 400 - 50 = 350
+
+        moveInterval = setInterval(function () {
+          const current = parseInt(getComputedStyle(box).left, 10) || 0;
+
+          if (current >= maxLeft) {
+            clearInterval(moveInterval);
+            moveInterval = null;
+            return;
+          }
+          box.style.left = (current + 1) + 'px'; 
+        }, 1);
+      }
+
+      document.getElementById('moveBtn').addEventListener('click', myMove);
+    })();
+  </script>
+</body>
+</html>
