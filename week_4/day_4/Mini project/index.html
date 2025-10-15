@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Random Quote Generator</title>
+
+  <!-- THEME: 1 seule couleur + dégradé -->
+  <style>
+   
+    :root{
+      --primary: #6c5ce7;               
+      --grad-angle: 135deg;             
+
+      /* Déclinaisons auto à partir de la couleur de base */
+      --primary-100: color-mix(in srgb, var(--primary) 15%, white);
+      --primary-200: color-mix(in srgb, var(--primary) 30%, white);
+      --primary-300: color-mix(in srgb, var(--primary) 45%, white);
+      --primary-700: color-mix(in srgb, var(--primary) 85%, black);
+      --primary-800: color-mix(in srgb, var(--primary) 92%, black);
+
+      /* Dégradés réutilisables */
+      --gradient-soft: linear-gradient(var(--grad-angle), var(--primary-100), var(--primary-300));
+      --gradient-strong: linear-gradient(var(--grad-angle), var(--primary), var(--primary-700));
+    }
+
+    html,body{
+      margin:0;
+      font-family:system-ui, Segoe UI, Roboto, Arial, sans-serif;
+      color:#20242a;                      
+      background: var(--gradient-soft);   
+      min-height:100%;
+    }
+
+    .wrap{ max-width:680px; margin:48px auto; padding:0 16px; }
+    .card{
+      background: #fff;
+      border: 1px solid var(--primary-200);
+      border-radius: 10px;
+      padding: 28px;
+      box-shadow: 0 12px 30px color-mix(in srgb, var(--primary) 18%, transparent);
+    }
+
+    h1{margin:0 0 10px;font-size:22px;color:#2a2e34}
+
+    /* Boutons = dégradé de la couleur unique */
+    button{
+      background: var(--gradient-strong);
+      color: #fff;
+      border: 1px solid var(--primary-800);
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor:pointer;
+      font-weight: 700;
+      letter-spacing:.2px;
+      transition: transform .06s ease, box-shadow .2s ease, filter .2s ease;
+      box-shadow: 0 6px 14px color-mix(in srgb, var(--primary) 30%, transparent);
+    }
+    button:hover{ filter:brightness(1.05); transform: translateY(-1px); }
+    button:active{ transform: translateY(0); }
+    .small-btn{ padding: 8px 12px; border-radius: 6px; }
+
+    /* Zone de citation — accents de la même teinte */
+    .quote-box{ margin:10px auto; max-width:520px }
+    .quote-mark{ font-size:72px; margin-right:8px; color: var(--primary-300) }
+    blockquote{ margin:0; padding:6px 0 0; font-size:28px; line-height:1.25; color:#3a3f46; font-weight:700 }
+    .author{ margin-top:8px; text-align:right; color: var(--primary-700); font-weight:700 }
+
+    /* Pastilles d’info avec teinte mono */
+    .pill{
+      display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px;
+      background: var(--primary-100); color:#2a2e34; border:1px solid var(--primary-200);
+      margin-left:6px;
+    }
+
+    /* Inputs / formulaires avec bordure teintée */
+    input[type="text"]{
+      width:100%; padding:10px; border-radius:8px;
+      border:1px solid var(--primary-200);
+      background:#fff; color:#20242a;
+      box-shadow: inset 0 0 0 999px color-mix(in srgb, var(--primary) 3%, transparent);
+    }
+    label{ display:block; margin:10px 0 6px; color:#2a2e34 }
+
+    .controls{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:6px 0 16px }
+    .toolbar{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px }
+    .row{ display:grid; grid-template-columns:1fr 1fr; gap:10px }
+    @media (max-width:640px){ .row{ grid-template-columns:1fr } }
+
+    .counter{ margin-top:8px; color:#434a52 }
+    hr{ margin:18px 0; border:none; border-top:1px solid var(--primary-200) }
+    .hidden{ display:none }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="controls">
+        <button id="btn-generate">Generate Quote</button>
+      </div>
+
+      <div class="quote-box" id="quote-box">
+        <span class="quote-mark">❝</span>
+        <blockquote id="quote-text">Click “Generate Quote” to begin.</blockquote>
+        <div class="author" id="quote-author"></div>
+        <div class="meta">
+          <span id="quote-id" class="pill">#—</span>
+          <span id="quote-likes" class="pill">❤ 0</span>
+        </div>
+      </div>
+
+      <!-- Toolbar for current quote -->
+      <div class="toolbar">
+        <button id="btn-like" class="small-btn">Like ❤</button>
+        <button id="btn-chars-all" class="small-btn">Chars (incl. spaces)</button>
+        <button id="btn-chars-nospace" class="small-btn">Chars (no spaces)</button>
+        <button id="btn-words" class="small-btn">Words</button>
+      </div>
+      <div id="counts" class="counter"></div>
+
+      <hr>
+
+      <!-- Add new quote -->
+      <h1>Add a Quote</h1>
+      <form id="form-add">
+        <div class="row">
+          <div>
+            <label for="new-quote">Quote</label>
+            <input id="new-quote" type="text" placeholder="Your quote..." required />
+          </div>
+          <div>
+            <label for="new-author">Author</label>
+            <input id="new-author" type="text" placeholder="Author name..." required />
+          </div>
+        </div>
+        <div class="controls" style="justify-content:flex-start">
+          <button class="small-btn" type="submit">Add</button>
+        </div>
+      </form>
+
+      <hr>
+
+      <!-- Filter by author (with Previous/Next navigation) -->
+      <h1>Filter by Author</h1>
+      <form id="form-filter" class="inline" style="display:flex;gap:10px;align-items:center">
+        <input id="filter-author" type="text" placeholder="Type an author name...">
+        <button class="small-btn" type="submit">Filter</button>
+        <button class="small-btn" type="button" id="btn-clear">Clear</button>
+      </form>
+
+      <div class="controls hidden" id="nav">
+        <button id="btn-prev" class="small-btn">Previous</button>
+        <button id="btn-next" class="small-btn">Next</button>
+      </div>
+      <div id="filter-info" class="counter"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
