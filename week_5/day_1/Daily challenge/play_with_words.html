@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Challenge — Play with words (Promises)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:24px;color:#0f172a}
+    h1{margin:0 0 10px}
+    h2{margin:18px 0 8px}
+    pre{background:#0b1020;color:#e5e7eb;padding:12px;border-radius:8px;white-space:pre-wrap}
+    button{padding:8px 12px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;cursor:pointer}
+    button:hover{background:#eef2f7}
+    .card{border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:18px}
+  </style>
+</head>
+<body>
+  
+  <div class="card">
+    <h2>Challenge 1 — makeAllCaps & sortWords</h2>
+    <p>Open the browser console to see the tests output.</p>
+  </div>
+
+  <div class="card">
+    <h2>Challenge 2 — Morse</h2>
+    <p>Click to run: you’ll be asked for a word/sentence; the Morse translation will appear below.</p>
+    <button id="morseBtn">Translate to Morse</button>
+    <pre id="morseOut">…awaiting input…</pre>
+  </div>
+
+<script>
+/* ================================
+   Challenge 1 — Play with words (Promises)
+   ================================ */
+
+/**
+ * makeAllCaps(words)
+ * If all items are strings -> resolve with UPPERCASED array
+ * Else reject with a reason.
+ */
+function makeAllCaps(words) {
+  return new Promise((resolve, reject) => {
+    if (!Array.isArray(words)) {
+      return reject('Input must be an array.');
+    }
+    const allStrings = words.every(w => typeof w === 'string');
+    if (!allStrings) {
+      return reject('All items must be strings.');
+    }
+    resolve(words.map(w => w.toUpperCase()));
+  });
+}
+
+/**
+ * sortWords(wordsUpper)
+ * If length > 4 -> resolve with alphabetically sorted array
+ * Else reject with a reason.
+ */
+function sortWords(wordsUpper) {
+  return new Promise((resolve, reject) => {
+    if (!Array.isArray(wordsUpper)) return reject('Input must be an array.');
+    if (wordsUpper.length > 4) {
+      resolve([...wordsUpper].sort()); // copy then sort
+    } else {
+      reject('Array length must be greater than 4.');
+    }
+  });
+}
+
+// Tests from the prompt (see Console):
+makeAllCaps([1, 'pear', 'banana'])
+  .then(arr => sortWords(arr))
+  .then(result => console.log('OK:', result))
+  .catch(error => console.log('Catch:', error));
+
+makeAllCaps(['apple', 'pear', 'banana'])
+  .then(arr => sortWords(arr))
+  .then(result => console.log('OK:', result))
+  .catch(error => console.log('Catch:', error));
+
+makeAllCaps(['apple', 'pear', 'banana', 'melon', 'kiwi'])
+  .then(arr => sortWords(arr))
+  .then(result => console.log('OK:', result)) // ["APPLE","BANANA","KIWI","MELON","PEAR"]
+  .catch(error => console.log('Catch:', error));
+
+
+/* ================================
+   Challenge 2 — Morse (Promises)
+   ================================ */
+
+const morse = `{
+  "0": "-----",
+  "1": ".----",
+  "2": "..---",
+  "3": "...--",
+  "4": "....-",
+  "5": ".....",
+  "6": "-....",
+  "7": "--...",
+  "8": "---..",
+  "9": "----.",
+  "a": ".-",
+  "b": "-...",
+  "c": "-.-.",
+  "d": "-..",
+  "e": ".",
+  "f": "..-.",
+  "g": "--.",
+  "h": "....",
+  "i": "..",
+  "j": ".---",
+  "k": "-.-",
+  "l": ".-..",
+  "m": "--",
+  "n": "-.",
+  "o": "---",
+  "p": ".--.",
+  "q": "--.-",
+  "r": ".-.",
+  "s": "...",
+  "t": "-",
+  "u": "..-",
+  "v": "...-",
+  "w": ".--",
+  "x": "-..-",
+  "y": "-.--",
+  "z": "--..",
+  ".": ".-.-.-",
+  ",": "--..--",
+  "?": "..--..",
+  "!": "-.-.--",
+  "-": "-....-",
+  "/": "-..-.",
+  "@": ".--.-.",
+  "(": "-.--.",
+  ")": "-.--.-"
+}`;
+
+/**
+ * toJs()
+ * Parse the JSON string into an object.
+ * If the object is empty -> reject, else resolve it.
+ */
+function toJs() {
+  return new Promise((resolve, reject) => {
+    try {
+      const obj = JSON.parse(morse);
+      if (obj && Object.keys(obj).length > 0) {
+        resolve(obj);
+      } else {
+        reject('Morse mapping is empty.');
+      }
+    } catch (e) {
+      reject('Invalid JSON for morse mapping.');
+    }
+  });
+}
+
+/**
+ * toMorse(morseJS)
+ * Ask the user for a word/sentence (prompt).
+ * If a character does not exist in mapping -> reject.
+ * Else resolve with an array of Morse codes.
+ * Spaces will be translated as '/' (common Morse separator for word breaks).
+ */
+function toMorse(morseJS) {
+  return new Promise((resolve, reject) => {
+    const input = prompt('Enter a word or sentence to convert to Morse:');
+    if (input === null || input.trim() === '') {
+      return reject('No input provided.');
+    }
+
+    const chars = input.trim().toLowerCase().split('');
+    const result = [];
+
+    for (const ch of chars) {
+      if (ch === ' ') {
+        // translate spaces into '/'
+        result.push(morseJS['/'] || '/');
+        continue;
+      }
+      if (!Object.prototype.hasOwnProperty.call(morseJS, ch)) {
+        return reject(`Character "${ch}" is not supported in the Morse mapping.`);
+      }
+      result.push(morseJS[ch]);
+    }
+    resolve(result);
+  });
+}
+
+/**
+ * joinWords(morseTranslation)
+ * Join with line breaks and display on the page.
+ */
+function joinWords(morseTranslation) {
+  const out = document.getElementById('morseOut');
+  out.textContent = morseTranslation.join('\n');
+}
+
+// Chain when the button is clicked
+document.getElementById('morseBtn').addEventListener('click', () => {
+  document.getElementById('morseOut').textContent = '…translating…';
+  toJs()
+    .then(obj => toMorse(obj))
+    .then(arr => joinWords(arr))
+    .catch(err => {
+      document.getElementById('morseOut').textContent = `Error: ${err}`;
+      console.log('Error:', err);
+    });
+});
+</script>
+</body>
+</html>
