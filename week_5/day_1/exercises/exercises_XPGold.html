@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Promise.all — Exercises</title></head>
+<body>
+<script>
+// ========== Exercise 1: Promise.all() ==========
+
+
+const promise1 = Promise.resolve(3);
+const promise2 = 42; // <-- plain value (not a Promise)
+const promise3 = new Promise((resolve) => setTimeout(resolve, 3000, "foo"));
+
+/*
+How Promise.all works (in short):
+
+- Promise.all(iterable) takes an array/iterable of promises OR plain values.
+- Any plain value is coerced to a resolved promise via Promise.resolve(value).
+- It returns ONE promise that:
+    • fulfills when **all** inputs fulfill, with an array of results
+      in the **same order** as the input array,
+    • rejects immediately on the **first** rejection, with that reason.
+
+In our case:
+- promise1 fulfills with 3
+- promise2 is a plain value 42 → treated as Promise.resolve(42)
+- promise3 fulfills with "foo" after ~3s
+=> After ~3s, Promise.all resolves to [3, 42, "foo"].
+*/
+
+// Helper that accepts an array of mixed promises/values, returns a promise of the resolved array,
+// and catches any rejection to avoid unhandled rejections (prints the error and rethrows or returns a fallback).
+function runAll(promises) {
+  // Promise.resolve(...) ensures plain values are handled uniformly as promises
+  const safe = promises.map(p => Promise.resolve(p));
+  return Promise.all(safe)
+    .then(values => {
+      console.log("Resolved values:", values);    // Expected: [3, 42, "foo"]
+      return values;
+    })
+    .catch(err => {
+      console.log("Caught a rejection:", err);
+      // You can either rethrow to propagate the error, or return a fallback.
+      // Here we return an empty array as a safe fallback to keep the demo running.
+      return [];
+    });
+}
+
+runAll([promise1, promise2, promise3]);
+
+// ========== Exercise 2: Analyze Promise.all() ==========
+
+function timesTwoAsync(x) {
+  return new Promise(resolve => resolve(x * 2));
+}
+
+const arr = [1, 2, 3];
+const promiseArr = arr.map(timesTwoAsync);
+/*
+promiseArr is now: [Promise(2), Promise(4), Promise(6)]
+Promise.all(promiseArr) resolves to [2, 4, 6].
+The order in the resulting array matches the input order,
+not the completion timing.
+*/
+Promise.all(promiseArr).then(result => {
+  console.log("Exercise 2 output:", result); 
+});
+</script>
+</body>
+</html>
