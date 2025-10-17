@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fetch API & Async/Await</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px }
+    #gif { display:block; max-width:320px; border-radius:10px; margin-top:12px }
+    button { padding:8px 12px; cursor:pointer }
+  </style>
+</head>
+<body>
+  <h1>Exercise 1 — Giphy API #2</h1>
+  <p>Click to fetch and append <b>one random GIF</b> to the page.</p>
+  <button id="btn-gif">Fetch random GIF</button>
+  <img id="gif" alt="Random GIF will appear here">
+
+  <script>
+    // ========== Exercise 1: Giphy API #2 (display ONE random GIF on the page) ==========
+    async function fetchRandomGif() {
+      const params = new URLSearchParams({
+        q: 'funny',
+        rating: 'g',
+        limit: '50',
+        api_key: 'hpvZycW22qCjn5cRM1xtWB8NKq4dQ2My'
+      });
+      const url = `https://api.giphy.com/v1/gifs/search?${params}`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        const json = await res.json();              // full object { data, pagination, meta }
+        // Pick one random gif from json.data
+        const list = json.data;
+        if (!Array.isArray(list) || list.length === 0) throw new Error('No GIFs returned');
+        const g = list[Math.floor(Math.random() * list.length)];
+        const src =
+          (g.images?.fixed_height?.url) ||
+          (g.images?.original?.url);
+        if (!src) throw new Error('No usable image URL on GIF');
+        const img = document.getElementById('gif');
+        img.src = src;
+        img.alt = g.title || 'Random GIF';
+      } catch (err) {
+        console.error('Exercise 1 — Error:', err);
+        alert('Failed to fetch a GIF: ' + err.message);
+      }
+    }
+    document.getElementById('btn-gif').addEventListener('click', fetchRandomGif);
+
+    // ========== Exercise 2: Analyze #2 ==========
+    let resolveAfter2Seconds_A2 = function () {
+      console.log("starting slow promise");
+      return new Promise(resolve => {
+        setTimeout(function () {
+          resolve("slow");
+          console.log("slow promise is done");
+        }, 2000);
+      });
+    };
+    let resolveAfter1Second_A2 = function () {
+      console.log("starting fast promise");
+      return new Promise(resolve => {
+        setTimeout(function () {
+          resolve("fast");
+          console.log("fast promise is done");
+        }, 1000);
+      });
+    };
+    let sequentialStart = async function () {
+      console.log('==SEQUENTIAL START==');
+      const slow = await resolveAfter2Seconds_A2();
+      console.log(slow);
+      const fast = await resolveAfter1Second_A2();
+      console.log(fast);
+    };
+    // run once so you see the order in the console
+    sequentialStart();
+
+    // ========== Exercise 3: Analyze #3 ==========
+    let resolveAfter2Seconds_A3 = function () {
+      console.log("starting slow promise");
+      return new Promise(resolve => {
+        setTimeout(function () {
+          resolve("slow");
+          console.log("slow promise is done");
+        }, 2000);
+      });
+    };
+    let resolveAfter1Second_A3 = function () {
+      console.log("starting fast promise");
+      return new Promise(resolve => {
+        setTimeout(function () {
+          resolve("fast");
+          console.log("fast promise is done");
+        }, 1000);
+      });
+    };
+    let concurrentStart = async function () {
+      console.log('==CONCURRENT START with await==');
+      const slow = resolveAfter2Seconds_A3();
+      const fast = resolveAfter1Second_A3();
+      console.log(await slow);
+      console.log(await fast);
+    };
+    setTimeout(concurrentStart, 4000); 
+
+    // ========== Exercise 4: Modify fetch with Async/Await (no .then, with try/catch) ==========
+    const urls = [
+      "https://jsonplaceholder.typicode.com/users",
+      "https://jsonplaceholder.typicode.com/posts",
+      "https://jsonplaceholder.typicode.com/albums"
+      // break one URL to test catch: "https://jsonplaceholder.typicode.com/ALBUMS404"
+    ];
+
+    async function getData() {
+      try {
+        const [ users, posts, albums ] = await Promise.all(
+          urls.map(async (url) => {
+            const resp = await fetch(url);              
+            if (!resp.ok) throw new Error(`HTTP ${resp.status} ${resp.statusText}`);
+            return await resp.json();
+          })
+        );
+        console.log('users', users);
+        console.log('posts', posts);
+        console.log('albums', albums);
+      } catch (e) {
+        console.log('ooooooops'); 
+        console.error(e);
+      }
+    }
+    getData();
+  </script>
+</body>
+</html>
