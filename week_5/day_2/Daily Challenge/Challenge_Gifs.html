@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title> Random Giphy by Category</title>
+  <style>
+    :root{
+      --fg:#111; --muted:#475569; --card:#fff; --border:#e5e7eb;
+      --accent1:#a78bfa; --accent2:#60a5fa;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Noto Sans,sans-serif;
+      color:var(--fg);
+      background:linear-gradient(135deg,#b388ff 0%,#8ec5ff 100%);
+      min-height:100dvh;
+    }
+    header{padding:22px 16px}
+    main{max-width:900px; margin:0 auto; padding:16px}
+    .card{background:rgba(255,255,255,.95); border:1px solid var(--border); border-radius:14px; padding:16px; box-shadow:0 6px 24px rgba(0,0,0,.06)}
+    form{display:grid; grid-template-columns:1fr auto auto; gap:10px; align-items:end}
+    label{font-size:12px; color:var(--muted)}
+    input{width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px}
+    button{padding:10px 14px; border-radius:10px; border:1px solid #cbd5e1; background:#fff; cursor:pointer; font-weight:600}
+    .primary{background:linear-gradient(135deg,var(--accent1),var(--accent2)); border-color:transparent; color:#111}
+    .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; margin-top:14px}
+    figure{margin:0; background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden}
+    figure img{display:block; width:100%; height:200px; object-fit:cover}
+    figcaption{display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:12px; color:var(--muted); padding:8px 10px; background:#f8fafc}
+    .note{font-size:12px; color:var(--muted); margin-top:8px}
+    .msg{margin-top:12px}
+    .msg .ok{background:#ecfeff; border:1px solid #bae6fd; padding:10px 12px; border-radius:10px}
+    .msg .err{background:#fee2e2; border:1px solid #fecaca; padding:10px 12px; border-radius:10px}
+  </style>
+</head>
+<body>
+  <header></header>
+  <main>
+    <section class="card">
+      <h2>Random GIF By Category</h2>
+      <p class="note">Type a category and click <em>Fetch GIF</em>. Each fetch adds <strong>one</strong> random GIF for that category. You can remove a single GIF or delete all.</p>
+
+      <form id="gifForm">
+        <div>
+          <label for="tag">Category / Keyword</label>
+          <input id="tag" name="tag" type="text" placeholder="e.g., sun, cats, anime…" required />
+        </div>
+        <button class="primary" type="submit" id="fetchBtn">Fetch GIF</button>
+        <button type="button" id="deleteAllBtn" title="Remove all GIFs">Delete All</button>
+      </form>
+
+      <div class="msg" id="feedback"></div>
+      <div class="grid" id="gallery"></div>
+    </section>
+  </main>
+
+  <script>
+    // Provided API key
+    const API_KEY = 'hpvZycW22qCjn5cRM1xtWB8NKq4dQ2My';
+
+    // DOM refs
+    const form = document.getElementById('gifForm');
+    const tagInput = document.getElementById('tag');
+    const gallery = document.getElementById('gallery');
+    const feedback = document.getElementById('feedback');
+    const fetchBtn = document.getElementById('fetchBtn');
+    const deleteAllBtn = document.getElementById('deleteAllBtn');
+
+    function setMessage(html, type='ok'){
+      feedback.innerHTML = html ? `<div class="${type}">${html}</div>` : '';
+    }
+
+    function escapeHtml(s=''){
+      return String(s)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    function makeGifCard({ url, title, category }){
+      const fig = document.createElement('figure');
+      const img = document.createElement('img');
+      const cap = document.createElement('figcaption');
+      const del = document.createElement('button');
+
+      img.src = url;
+      img.alt = title || category || 'GIF';
+      img.loading = 'lazy';
+
+      del.textContent = 'DELETE';
+      del.setAttribute('aria-label', 'Delete this GIF');
+      del.addEventListener('click', ()=> fig.remove());
+
+      cap.innerHTML = `<span title="${escapeHtml(title || category || 'GIF')}">${escapeHtml(title || category || 'GIF')}</span>`;
+      cap.appendChild(del);
+
+      fig.appendChild(img);
+      fig.appendChild(cap);
+      return fig;
+    }
+
+    async function fetchRandomGif(tag){
+      const endpoint = new URL('https://api.giphy.com/v1/gifs/random');
+      endpoint.searchParams.set('api_key', API_KEY);
+      endpoint.searchParams.set('tag', tag);
+      endpoint.searchParams.set('rating', 'g');
+
+      try{
+        fetchBtn.disabled = true;
+        setMessage('Fetching a random GIF…', 'ok');
+
+        const res = await fetch(endpoint.toString());
+        if(!res.ok){
+          throw new Error(`Network error (${res.status} ${res.statusText})`);
+        }
+
+        const payload = await res.json();
+        // Random endpoint returns an object in data (not an array)
+        const data = payload?.data || {};
+        const images = data.images || {};
+        const src =
+          images?.downsized?.url ||
+          images?.original?.url ||
+          images?.fixed_height?.url;
+
+        if(!src){
+          setMessage(`No GIF found for <code>${escapeHtml(tag)}</code>. Try another keyword.`, 'err');
+          return;
+        }
+
+        const title = data.title || data.slug || tag;
+        const card = makeGifCard({ url: src, title, category: tag });
+        // Add newest on top
+        gallery.prepend(card);
+        setMessage(`👍 1 GIF added for <code>${escapeHtml(tag)}</code>.`, 'ok');
+
+      }catch(err){
+        console.error(err);
+        setMessage(`❌ Error: ${escapeHtml(err.message || String(err))}`, 'err');
+      }finally{
+        fetchBtn.disabled = false;
+      }
+    }
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const tag = tagInput.value.trim();
+      if(!tag){
+        setMessage('Please enter a category/keyword.', 'err');
+        tagInput.focus();
+        return;
+      }
+      fetchRandomGif(tag);
+    });
+
+    deleteAllBtn.addEventListener('click', ()=>{
+      gallery.innerHTML = '';
+      setMessage('All GIFs have been removed.', 'ok');
+    });
+  </script>
+</body>
+</html>
