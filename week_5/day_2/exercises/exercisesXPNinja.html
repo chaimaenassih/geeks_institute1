@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fetch API, Async/Await (Giphy + Analyses)</title>
+  <style>
+    :root {
+      --fg:#111111;
+      --muted:#374151;
+      --card-bg:rgba(255,255,255,0.92);
+      --card-border:#e5e7eb;
+      --control-bg:#ffffff;
+      --control-border:#cbd5e1;
+      --accent-start:#a78bfa;
+      --accent-end:#60a5fa;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Noto Sans,sans-serif;
+      color:var(--fg);
+      background:linear-gradient(135deg, #b388ff 0%, #8ec5ff 100%);
+      min-height:100dvh;
+    }
+    header{padding:24px 16px; border-bottom:1px solid var(--card-border); background:transparent}
+    h1{margin:0 0 6px; font-size:clamp(22px,2.4vw,30px)}
+    p.sub{margin:0; color:var(--muted)}
+    main{padding:20px; max-width:1100px; margin:0 auto}
+    .card{background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:16px; box-shadow:0 6px 24px rgba(0,0,0,.06)}
+    form{display:grid; gap:12px; grid-template-columns:repeat(8,1fr); align-items:end}
+    label{font-size:12px; color:var(--muted)}
+    input, select{width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--control-border); background:var(--control-bg); color:var(--fg)}
+    button{appearance:none; border:1px solid var(--control-border); background:var(--control-bg); color:var(--fg); padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600}
+    button.primary{
+      background:linear-gradient(135deg, var(--accent-start), var(--accent-end));
+      border-color:transparent;
+      color:var(--fg);
+    }
+    button:disabled{opacity:.6; cursor:not-allowed}
+    .grid{margin-top:16px; display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px}
+    figure{margin:0; background:#ffffff; border:1px solid var(--card-border); border-radius:14px; overflow:hidden; position:relative}
+    figure img{width:100%; height:180px; object-fit:cover; display:block}
+    figcaption{padding:8px 10px; font-size:12px; color:var(--muted); display:flex; justify-content:space-between; gap:8px; align-items:center; background:#f8fafc}
+    .x{border:none; background:transparent; color:#475569; font-size:16px; line-height:1; cursor:pointer}
+    .note{font-size:12px; color:var(--muted)}
+    .error{border:1px solid #fecaca; background:#fee2e2; color:#111; padding:10px 12px; border-radius:12px}
+  </style>
+</head>
+<body>
+  <header></header>
+
+  <main>
+    <section class="card">
+      <h2>Exercise 1: Giphy API #3</h2>
+      <p class="note">Enter your <strong>Giphy API Key</strong> (provided in Exercises XP), type a category (keyword), then click “Search.” Use <code>fetch</code>, check <code>response.ok</code>, handle errors, and allow clearing all GIFs.</p>
+
+      <form id="searchForm">
+        <div style="grid-column: span 6;">
+          <label for="query">Category / Keyword</label>
+          <input id="query" name="query" type="text" placeholder="e.g., cats, football, anime…" required />
+        </div>
+        <div>
+          <label for="limit">Number</label>
+          <select id="limit" name="limit">
+            <option>6</option>
+            <option selected>12</option>
+            <option>24</option>
+            <option>36</option>
+          </select>
+        </div>
+        <div>
+          <label for="rating">Rating</label>
+          <select id="rating" name="rating">
+            <option value="g" selected>g</option>
+            <option value="pg">pg</option>
+            <option value="pg-13">pg-13</option>
+            <option value="r">r</option>
+          </select>
+        </div>
+        <div style="grid-column: span 2; display:flex; gap:8px;">
+          <button class="primary" id="submitBtn" type="submit">Search</button>
+          <button id="clearAllBtn" type="button" title="Delete all GIFs">Clear all</button>
+        </div>
+      </form>
+
+      <div id="feedback" style="margin-top:12px"></div>
+      <div class="grid" id="results"></div>
+    </section>
+
+    <details class="card">
+      <summary><strong>Exercises 2–4: Analyses (click to expand)</strong></summary>
+      <div>
+        <h3>Exercise 2: Analyze #4 (<code>Promise.all</code> + timers)</h3>
+        <pre>
+==CONCURRENT START with Promise.all==
+starting slow promise
+starting fast promise
+fast promise is done
+slow promise is done
+slow
+fast
+        </pre>
+        <p class="note">Explanation: both promises start immediately. The “fast” one resolves at ~1 s (“fast promise is done”), the “slow” one at ~2 s. <code>Promise.all</code> runs its <code>.then</code> only after both resolve → then logs <code>slow</code> then <code>fast</code> (in array order).</p>
+
+        <h3>Exercise 3: Analyze #5 (<code>await Promise.all</code> with 2 async IIFEs)</h3>
+        <pre>
+==PARALLEL with await Promise.all==
+starting slow promise
+starting fast promise
+fast promise is done
+fast
+slow promise is done
+slow
+        </pre>
+        <p class="note">Explanation: two tasks run in parallel. Each async IIFE <em>awaits</em> its own promise and logs after completion; “fast” finishes and logs before “slow.”</p>
+
+        <h3>Exercise 4: Analyze #6 (<code>.then</code> in parallel, no error handling)</h3>
+        <pre>
+==PARALLEL with Promise.then==
+starting slow promise
+starting fast promise
+fast promise is done
+fast
+slow promise is done
+slow
+        </pre>
+        <p class="note">Explanation: each promise handles its own <code>.then</code>; “fast” resolves and logs before “slow.” (Note: no global <em>catch</em> here.)</p>
+      </div>
+    </details>
+  </main>
+
+  <script>
+    const DEFAULT_API_KEY = 'hpvZycW22qCjn5cRM1xtWB8NKq4dQ2My';
+    // --- DOM references
+    const form = document.getElementById('searchForm');
+    const resultsEl = document.getElementById('results');
+    const feedbackEl = document.getElementById('feedback');
+    const submitBtn = document.getElementById('submitBtn');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+
+    function showMessage(html, kind = 'note') {
+      feedbackEl.innerHTML = html ? `<div class="${kind}">${html}</div>` : '';
+    }
+
+    function cardForGif(g) {
+      const fig = document.createElement('figure');
+      const img = document.createElement('img');
+      const cap = document.createElement('figcaption');
+      const close = document.createElement('button');
+      const title = g.title || 'GIF';
+      const src = g?.images?.downsized?.url || g?.images?.original?.url;
+      img.loading = 'lazy';
+      img.alt = title;
+      img.src = src;
+      cap.innerHTML = `<span title="${title.replace(/"/g,'&quot;')}">${title || 'GIF'}</span>`;
+      close.className = 'x';
+      close.setAttribute('aria-label','Delete this GIF');
+      close.textContent = '×';
+      close.addEventListener('click', ()=> fig.remove());
+      cap.appendChild(close);
+      fig.appendChild(img);
+      fig.appendChild(cap);
+      return fig;
+    }
+
+    async function fetchGifs({ apiKey, query, limit, rating }) {
+      const endpoint = new URL('https://api.giphy.com/v1/gifs/search');
+      endpoint.searchParams.set('api_key', apiKey);
+      endpoint.searchParams.set('q', query);
+      endpoint.searchParams.set('limit', String(limit));
+      endpoint.searchParams.set('rating', rating);
+      endpoint.searchParams.set('lang', 'en');
+
+      try {
+        submitBtn.disabled = true;
+        showMessage('Searching…');
+        const res = await fetch(endpoint.toString());
+        if(!res.ok){
+          throw new Error(`Network failure (${res.status} ${res.statusText})`);
+        }
+        const data = await res.json();
+        const list = Array.isArray(data?.data) ? data.data : [];
+        if(list.length === 0){
+          showMessage(`No GIF found for <code>${escapeHtml(query)}</code>.`, 'error');
+          return;
+        }
+        const frag = document.createDocumentFragment();
+        list.forEach(g => frag.appendChild(cardForGif(g)));
+        resultsEl.prepend(frag);
+        showMessage(`👍 ${list.length} GIF(s) added for <code>${escapeHtml(query)}</code>.`);
+      } catch(err){
+        console.error(err);
+        showMessage(`❌ Error: ${escapeHtml(String(err.message || err))}`, 'error');
+      } finally {
+        submitBtn.disabled = false;
+      }
+    }
+
+    function escapeHtml(s=''){
+      return String(s)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const apiKey = DEFAULT_API_KEY;
+      const query = form.query.value.trim();
+      const limit = Number(form.limit.value || 12);
+      const rating = form.rating.value;
+      if(!query){
+        showMessage('Please enter a keyword.', 'error');
+        form.query.focus();
+        return;
+      }
+      fetchGifs({ apiKey, query, limit, rating });
+    });
+
+    clearAllBtn.addEventListener('click', ()=>{
+      resultsEl.innerHTML = '';
+      showMessage('All GIFs have been removed.');
+    });
+
+    function resolveAfter(ms, label){
+      console.log(`starting ${label} promise`);
+      return new Promise(res=> setTimeout(()=>{ res(label); console.log(`${label} promise is done`); }, ms));
+    }
+    function concurrentDemo(){
+      console.log('==CONCURRENT START with Promise.all==');
+      return Promise.all([resolveAfter(2000,'slow'), resolveAfter(1000,'fast')]).then(msgs=>{
+        console.log(msgs[0]);
+        console.log(msgs[1]);
+      });
+    }
+    setTimeout(concurrentDemo, 1000);
+  </script>
+</body>
+</html>
