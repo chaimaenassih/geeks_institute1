@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fetch API + Async/Await</title>
+</head>
+<body>
+
+  <script>
+    // =============== Exercice 1 : Giphy API (hilarious, rating=g) ===============
+    (async function exercise1() {
+      const url = 'https://api.giphy.com/v1/gifs/search?q=hilarious&rating=g&api_key=hpvZycW22qCjn5cRM1xtWB8NKq4dQ2My';
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        const data = await res.json();
+        console.log('Exercise 1 — Full JS object:', data); // { data: [...], pagination: {...}, meta: {...} }
+      } catch (err) {
+        console.error('Exercise 1 — Error:', err);
+      }
+    })();
+
+    // =============== Exercice 2 : Giphy API (sun, limit=10, offset=2) ===============
+    (async function exercise2() {
+      const params = new URLSearchParams({
+        q: 'sun',
+        limit: '10',
+        offset: '2',
+        rating: 'g',
+        api_key: 'hpvZycW22qCjn5cRM1xtWB8NKq4dQ2My'
+      });
+      const url = `https://api.giphy.com/v1/gifs/search?${params.toString()}`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        const data = await res.json();
+        console.log('Exercise 2 — Full JS object:', data); // { data: [...], pagination: {...}, meta: {...} }
+      } catch (err) {
+        console.error('Exercise 2 — Error:', err);
+      }
+    })();
+
+    // =============== Exercice 3 : Async function (SWAPI, sans then()) ===============
+    async function getStarship9() {
+      const url = 'https://www.swapi.tech/api/starships/9/';
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        const data = await res.json();
+        console.log('Exercise 3 — objectStarWars.result:', data.result);
+      } catch (err) {
+        console.error('Exercise 3 — Error:', err);
+      }
+    }
+    // Appel sans then()
+    (async () => { await getStarship9(); })();
+
+    // =============== Exercice 4 : Analyze ===============
+    // Attendu en console : "calling" puis (après ~2s) "resolved"
+    function resolveAfter2Seconds() {
+      return new Promise(resolve => {
+        setTimeout(() => resolve('resolved'), 2000);
+      });
+    }
+    async function asyncCall() {
+      console.log('calling');
+      const result = await resolveAfter2Seconds();
+      console.log(result);
+    }
+    asyncCall();
+  </script>
+</body>
+</html>
