@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Challenge — Promise.all() Sunrise</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Noto Sans,sans-serif; background:#f7f7fb; color:#111}
+    main{max-width:800px; margin:0 auto; padding:20px}
+    h1{font-size:20px; margin:0 0 12px}
+    .card{background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:16px}
+    form{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+    fieldset{border:1px solid #e5e7eb; border-radius:10px; padding:12px}
+    legend{font-weight:600; font-size:14px}
+    label{display:block; font-size:12px; color:#4b5563; margin-bottom:6px}
+    input{width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px}
+    .row{grid-column:1/-1; display:flex; gap:8px; flex-wrap:wrap}
+    button{padding:10px 14px; border-radius:10px; border:1px solid #cbd5e1; background:#fff; cursor:pointer; font-weight:600}
+    .primary{background:linear-gradient(135deg,#a78bfa,#60a5fa); border-color:transparent; color:#111}
+    .msg{margin-top:12px; grid-column:1/-1}
+    .ok{background:#ecfeff; border:1px solid #bae6fd; padding:10px 12px; border-radius:10px}
+    .err{background:#fee2e2; border:1px solid #fecaca; padding:10px 12px; border-radius:10px}
+    .results{margin-top:14px; display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+    .panel{border:1px solid #e5e7eb; border-radius:10px; padding:12px; background:#fff}
+    @media (max-width:720px){form,.results{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main>
+  <section class="card">
+    <h1>Sunrise — 2 Cities (Promise.all)</h1>
+
+    <form id="sunForm">
+      <fieldset>
+        <legend>City A</legend>
+        <label for="lat1">Latitude</label>
+        <input id="lat1" name="lat1" type="number" step="any" required placeholder="e.g., 48.864716 (Paris)" />
+        <label for="lng1" style="margin-top:8px">Longitude</label>
+        <input id="lng1" name="lng1" type="number" step="any" required placeholder="e.g., 2.349014 (Paris)" />
+      </fieldset>
+
+      <fieldset>
+        <legend>City B</legend>
+        <label for="lat2">Latitude</label>
+        <input id="lat2" name="lat2" type="number" step="any" required placeholder="e.g., 40.730610 (New York)" />
+        <label for="lng2" style="margin-top:8px">Longitude</label>
+        <input id="lng2" name="lng2" type="number" step="any" required placeholder="e.g., -73.935242 (New York)" />
+      </fieldset>
+
+      <div class="row">
+        <button class="primary" type="submit" id="submitBtn">Show Sunrises</button>
+      </div>
+
+      <div class="msg" id="feedback"></div>
+
+      <div class="results" id="results" hidden>
+        <div class="panel">
+          <h3 style="margin:0 0 6px">City A</h3>
+          <div>Sunrise (UTC): <strong id="aUTC">—</strong></div>
+        </div>
+        <div class="panel">
+          <h3 style="margin:0 0 6px">City B</h3>
+          <div>Sunrise (UTC): <strong id="bUTC">—</strong></div>
+        </div>
+      </div>
+    </form>
+  </section>
+</main>
+
+<script>
+  const form = document.getElementById('sunForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const feedback = document.getElementById('feedback');
+  const resultsWrap = document.getElementById('results');
+  const aUTC = document.getElementById('aUTC');
+  const bUTC = document.getElementById('bUTC');
+
+  function setMessage(html, kind='ok'){
+    feedback.innerHTML = html ? `<div class="${kind}">${html}</div>` : '';
+  }
+
+  function apiUrl(lat, lng){
+    const u = new URL('https://api.sunrise-sunset.org/json');
+    u.searchParams.set('lat', String(lat));
+    u.searchParams.set('lng', String(lng));
+    u.searchParams.set('date', 'today');
+    // formatted=0 => ISO 8601 (UTC) which is easier to parse
+    u.searchParams.set('formatted', '0');
+    return u.toString();
+  }
+
+  async function fetchSunrise(lat, lng){
+    const res = await fetch(apiUrl(lat, lng));
+    if(!res.ok){
+      throw new Error(`Network error (${res.status} ${res.statusText})`);
+    }
+    const data = await res.json();
+    if(data.status !== 'OK' || !data.results?.sunrise){
+      throw new Error('Invalid API response');
+    }
+    // Keep UTC time as returned by the API
+    const d = new Date(data.results.sunrise); 
+    if (isNaN(d)) {
+      throw new Error('Unparsable sunrise time');
+    }
+    // Return HH:MM (UTC)
+    return d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'UTC'});
+  }
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const lat1 = parseFloat(form.lat1.value);
+    const lng1 = parseFloat(form.lng1.value);
+    const lat2 = parseFloat(form.lat2.value);
+    const lng2 = parseFloat(form.lng2.value);
+
+    // Basic validation
+    if (![lat1,lng1,lat2,lng2].every(Number.isFinite)) {
+      setMessage('Please enter 4 valid numbers (latitude/longitude).', 'err');
+      resultsWrap.hidden = true;
+      return;
+    }
+
+    try{
+      submitBtn.disabled = true;
+      setMessage('Fetching…');
+
+      // REQUIREMENT: display only when BOTH promises resolve
+      const [sunA, sunB] = await Promise.all([
+        fetchSunrise(lat1, lng1),
+        fetchSunrise(lat2, lng2)
+      ]);
+
+      aUTC.textContent = sunA;
+      bUTC.textContent = sunB;
+      resultsWrap.hidden = false;
+      setMessage('✅ Sunrise times retrieved (UTC).', 'ok');
+
+    } catch(err){
+      console.error(err);
+      setMessage(`❌ ${err.message || String(err)}`, 'err');
+      resultsWrap.hidden = true;
+    } finally{
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
