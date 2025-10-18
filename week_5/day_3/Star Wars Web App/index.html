@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Star Wars Web App Using AJAX API</title>
+
+  <!-- Font Awesome (spinner) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <!-- Titre comme la démo -->
+    <h1 class="title" aria-hidden="true">STAR<br/>WARS</h1>
+
+    <!-- Carte d'infos : statut + contenu + erreur A L'INTÉRIEUR -->
+    <article id="card" class="card" aria-busy="false">
+      <div id="status" class="status"></div>
+
+      <h2 id="name" class="name">—</h2>
+      <ul class="details">
+        <li><strong>Height:</strong> <span id="height">—</span></li>
+        <li><strong>Gender:</strong> <span id="gender">—</span></li>
+        <li><strong>Birth Year:</strong> <span id="birth">—</span></li>
+        <li><strong>Home World:</strong> <span id="homeworld">—</span></li>
+      </ul>
+
+      <p id="error" class="error hidden" role="alert"></p>
+    </article>
+
+    <div class="controls">
+      <button id="fetchBtn" type="button">Find Someone</button>
+    </div>
+  </main>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

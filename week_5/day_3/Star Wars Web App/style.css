@@ -1,0 +1,98 @@
+:root{
+  --bg:#000;
+  --yellow:#ffe81f;
+  --text:#fff;
+  --btn:#e6e6e6;
+}
+
+/* ===== Arrière-plan étoilé “style démo” ===== */
+html,body{height:100%}
+body{
+  margin:0;
+  color:var(--text);
+  font-family:"Times New Roman", Times, serif;
+
+  background-color:#000;
+  background-image:url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>\
+    <rect width='100%' height='100%' fill='black'/>\
+    <g fill='white' opacity='0.95'>\
+      <circle cx='12' cy='18' r='1'/><circle cx='40' cy='26' r='1'/>\
+      <circle cx='86' cy='34' r='1'/><circle cx='72' cy='10' r='0.8'/>\
+      <circle cx='22' cy='64' r='0.9'/><circle cx='58' cy='72' r='1'/>\
+      <circle cx='98' cy='64' r='0.9'/><circle cx='30' cy='104' r='1'/>\
+      <circle cx='78' cy='98' r='1'/><circle cx='116' cy='82' r='0.8'/>\
+      <circle cx='8' cy='92' r='0.7'/><circle cx='106' cy='18' r='0.7'/>\
+      <circle cx='140' cy='52' r='1'/><circle cx='148' cy='128' r='0.9'/>\
+      <circle cx='50' cy='140' r='0.8'/><circle cx='120' cy='120' r='1'/>\
+    </g></svg>");
+  background-repeat:repeat;
+  background-size:160px 160px;
+
+  min-height:100vh;
+  display:flex;
+  align-items:flex-start;  /* titre en haut comme la démo */
+  justify-content:center;
+  padding:20px;
+}
+
+/* conteneur */
+.wrap{
+  width:min(1100px, 96vw);
+  text-align:center;
+}
+
+/* ===== Titre jaune avec contour noir ===== */
+.title{
+  margin:0 0 22px;
+  color:var(--yellow);
+  font-size:clamp(46px, 12vw, 130px);
+  line-height:.9;
+  font-weight:900;
+  letter-spacing:.06em;
+  -webkit-text-stroke:4px #000;
+  text-shadow:0 0 2px #000, 0 0 12px rgba(255,232,31,.28);
+  font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+}
+
+/* ===== Carte d'infos (mêmes proportions que la démo) ===== */
+.card{
+  width:720px;              
+  max-width:92vw;
+  height:240px;             
+  margin:0 auto 18px;
+  border:4px solid var(--yellow);
+  border-radius:20px;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+}
+
+/* statut / loading DANS la carte */
+.status{ min-height:28px; margin:0 0 6px; font-size:1.05rem; }
+.loading{ font-size:1.05rem; }
+
+/* contenu de la personne */
+.name{ font-size:1.5rem; font-weight:700; margin:6px 0 10px; }
+.details{ list-style:none; padding:0; margin:0; }
+.details li{ margin:6px 0; font-size:1.05rem; }
+
+/* erreur (blanc, centrée) */
+.error{ color:#fff; font-weight:700; font-size:1.15rem; }
+.hidden{ display:none !important; }
+
+/* Bouton gris clair à bordure jaune */
+.controls{ text-align:center; }
+button{
+  background:var(--btn);
+  color:#111;
+  border:4px solid var(--yellow);
+  border-radius:12px;
+  padding:8px 18px;
+  font-weight:800;
+  cursor:pointer;
+}
+button:disabled{ opacity:.6; cursor:not-allowed; }
