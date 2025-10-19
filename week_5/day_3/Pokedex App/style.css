@@ -1,0 +1,141 @@
+:root{
+  --ink:#222;
+  --paper:#fff;
+  --error:#d90429;
+}
+
+/* Reset */
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{
+  margin:0;
+  font-family: Georgia, "Times New Roman", serif;
+  color:var(--ink);
+  background:#f7f7fb;
+}
+
+/* ===== CONTENEUR & GRILLE (COLLÉ, SANS DÉCALAGE) ===== */
+.container{
+  width: calc(780px + 340px + 36px);
+  max-width: 100%;
+  margin:18px auto;
+  padding:16px 18px;                 
+  border:1px solid #ececf2;
+  border-radius:12px;
+  background:#fff;
+
+  display:grid;
+  grid-template-columns: 780px 340px;
+  grid-template-areas:
+    "logo  help"
+    "dex   help";
+  column-gap:0;                    
+  row-gap:12px;
+  align-items:start;
+}
+
+/* ===== LOGO ===== */
+.logo{
+  grid-area:logo;
+  width:260px;
+  height:auto;
+  margin-left:4px;
+}
+
+/* ===== HOW TO USE ===== */
+.help{
+  grid-area:help;
+  align-self:start;
+  width:340px;                      
+  max-width:340px;
+  margin:0;
+  padding:14px 16px;
+  background:#fff;
+  border:1px solid #e7e7ee;
+  border-radius:10px;
+  box-shadow:0 1px 0 rgba(0,0,0,.02);
+}
+.help h3{ margin:0 0 8px; font-size:20px; }
+.help ol{
+  margin:0;
+  padding-left:18px;
+  line-height:1.5;
+  font-size:15px;
+}
+
+/* ===== POKEDEX ===== */
+.dex{
+  grid-area:dex;
+  position:relative;
+  margin:0;                          
+  width:780px;                       
+  max-width:780px;
+  aspect-ratio:780 / 520;
+  background:url("pokedex.png") center/contain no-repeat;
+}
+
+.screen{
+  position:absolute;
+  left:302px; top:68px;              
+  width:220px; height:150px;
+  display:grid; place-items:center;
+  overflow:hidden; border-radius:10px;
+}
+.screen img{ width:140px; image-rendering:pixelated; }
+.loading{ color:#fff; font-weight:700; }
+.hidden{ display:none !important; }
+
+/* ===== CARTOUCHE D'INFOS===== */
+.card{
+  position:absolute;
+
+  left: 285px;      
+  top: 300px;          
+  width: 280px;
+  min-height: 175px;
+
+  background: #fde1c8;             
+  border: 6px solid #cfc7bb;        
+  box-shadow: none;                 
+  padding: 14px 20px;
+ border-radius: 16px; 
+  text-align: center;
+  color: #333;
+  line-height: 1.35;
+  z-index: 1;                       
+}
+.card h2{ margin: 4px 0 10px; font-size: 22px; font-weight: 700; }
+.card p{ margin: 7px 0; font-size: 15px; }
+.error{ color:var(--error); font-weight:700; }
+
+/* ===== BOUTONS (zones cliquables) ===== */
+#btn-left{
+  position:absolute; left:150px; top:355px;
+  width:50px; height:50px;
+  background:transparent; border:none; cursor:pointer;
+}
+#btn-right{
+  position:absolute; left:565px; top:355px;
+  width:50px; height:50px;
+  background:transparent; border:none; cursor:pointer;
+}
+#btn-random{
+  position:absolute; right:45px; top:350px;
+  width:72px; height:72px; border-radius:50%;
+  background:transparent; border:none; cursor:pointer;
+}
+#btn-left:active, #btn-right:active, #btn-random:active{ transform:scale(.97); }
+
+/* ===== Responsive (mobile: une colonne) ===== */
+@media (max-width: 1180px){
+  .container{
+    width:auto;                      
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "logo"
+      "help"
+      "dex";
+  }
+  .help{ width:100%; max-width:none; margin-top:4px; }
+  .dex{ margin-top:6px; width:100%; max-width:100%; }
+}
