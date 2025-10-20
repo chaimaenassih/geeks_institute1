@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Currency Converter</title>
+  <style>
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      color:#fff;
+      background: url('bs.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height:100vh;
+      display:flex; justify-content:center; align-items:center;
+
+      font-weight: 700;
+      font-size: 16.5px; 
+    }
+    
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      background: inherit;                 
+      filter: blur(6px) brightness(.95);   
+      transform: scale(1.05);              
+      z-index:-1; pointer-events:none;
+    }
+
+    .container{
+      background: rgba(0,0,0,.45);         
+      backdrop-filter: blur(4px);           
+      -webkit-backdrop-filter: blur(4px);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      width: 380px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+    }
+    h1{
+      margin-bottom: 20px;
+      font-size: 32px; 
+      letter-spacing: .3px;
+    }
+    label{
+      display:block; margin:10px 0 6px;
+      font-size: 15.5px;
+    }
+    select, input{
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:none;
+      margin-bottom:15px;
+      text-align:center;
+      font-weight:700;          
+      font-size: 16px;
+    }
+   
+    input::placeholder{ font-weight:600; color:#e5e7eb; }
+
+    button{
+      padding:12px 16px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      background: linear-gradient(90deg, #22d3ee, #a78bfa);
+      color:#000;
+      font-weight:700;
+      font-size: 16px;
+    }
+    .switch{
+      margin:10px 0; cursor:pointer; user-select:none;
+      font-size: 20px;
+    }
+    .result{
+      margin-top:20px;
+      font-size: 18px;
+      font-weight:700;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Currency Converter</h1>
+
+    <label for="from">From:</label>
+    <select id="from"></select>
+
+    <div class="switch" id="switch" title="Inverser les devises">⟲</div>
+
+    <label for="to">To:</label>
+    <select id="to"></select>
+
+    <label for="amount">Amount:</label>
+    <input type="number" id="amount" placeholder="Enter amount" />
+
+    <button id="convert">Convert</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    
+    const API_KEY = 'a9f632d62812636236a27ee3';
+
+    async function loadCurrencies() {
+      const res = await fetch(`https://v6.exchangerate-api.com/v6/${API_KEY}/codes`);
+      const data = await res.json();
+      if (data.result !== 'success') {
+        document.getElementById('result').textContent =
+          'Error loading codes: ' + (data['error-type'] || 'Unknown');
+        return;
+      }
+      const fromSelect = document.getElementById('from');
+      const toSelect = document.getElementById('to');
+
+      data.supported_codes.forEach(([code, name]) => {
+        const o1 = document.createElement('option');
+        const o2 = document.createElement('option');
+        o1.value = o2.value = code;
+        o1.textContent = o2.textContent = `${code} - ${name}`;
+        fromSelect.appendChild(o1);
+        toSelect.appendChild(o2);
+      });
+
+      fromSelect.value = 'USD';
+      toSelect.value = 'EUR';
+    }
+
+    async function convertCurrency() {
+      const from = document.getElementById('from').value;
+      const to = document.getElementById('to').value;
+      const amount = parseFloat(document.getElementById('amount').value || '0');
+      if (Number.isNaN(amount) || amount < 0) {
+        document.getElementById('result').textContent =
+          'Please enter a valid amount (>= 0).';
+        return;
+      }
+      const res = await fetch(`https://v6.exchangerate-api.com/v6/${API_KEY}/pair/${from}/${to}/${amount}`);
+      const data = await res.json();
+      if (data.result !== 'success') {
+        document.getElementById('result').textContent =
+          'Error: ' + (data['error-type'] || 'Unknown');
+        return;
+      }
+      const nf = new Intl.NumberFormat(undefined, { maximumFractionDigits: 6 });
+      document.getElementById('result').textContent =
+        `${nf.format(amount)} ${from} = ${nf.format(data.conversion_result)} ${to}  (rate: ${nf.format(data.conversion_rate)})`;
+    }
+
+    function switchCurrencies() {
+      const from = document.getElementById('from');
+      const to = document.getElementById('to');
+      const temp = from.value;
+      from.value = to.value;
+      to.value = temp;
+      if (document.getElementById('amount').value) convertCurrency();
+    }
+
+    document.getElementById('convert').addEventListener('click', convertCurrency);
+    document.getElementById('switch').addEventListener('click', switchCurrencies);
+
+    loadCurrencies();
+  </script>
+</body>
+</html>
