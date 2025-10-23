@@ -1,0 +1,2 @@
+﻿This is some sample text inside file-data.txt
+Line 2 of the file.
