@@ -1,4 +1,4 @@
-import os, random,requests, psycopg2
+import os, random, requests, psycopg2
 
 API_URL = "https://restcountries.com/v3.1/all?fields=name,capital,flags,subregion,population"
 

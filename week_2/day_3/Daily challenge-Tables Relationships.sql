@@ -1,15 +1,4 @@
--- =========================================================
--- Daily Challenge: Tables Relationships (FULL SOLUTION)
--- Schema-qualified to avoid conflicts with dvdrental tables
--- =========================================================
-
--- Clean and recreate sandbox
-DROP SCHEMA IF EXISTS sandbox_rel CASCADE;
-CREATE SCHEMA sandbox_rel;
-
-------------------------------------------------------------
 -- Part I — One-to-One: customer <-> customer_profile
-------------------------------------------------------------
 
 -- Tables
 CREATE TABLE sandbox_rel.customer (
@@ -56,9 +45,8 @@ FROM sandbox_rel.customer c
 JOIN sandbox_rel.customer_profile cp ON cp.customer_id = c.id
 WHERE cp.isLoggedIn = FALSE;
 
-------------------------------------------------------------
+
 -- Part II — Many-to-Many: student <-> book via library
-------------------------------------------------------------
 
 -- 1) Book
 CREATE TABLE sandbox_rel.book (
@@ -136,6 +124,4 @@ JOIN sandbox_rel.student s ON s.student_id = l.student_fk_id
 JOIN sandbox_rel.book    b ON b.book_id    = l.book_fk_id
 WHERE b.title = 'Alice In Wonderland';
 
--- 7d) (test cascade) delete a student; related rows disappear from library
--- DELETE FROM sandbox_rel.student WHERE name = 'Bob';
--- SELECT * FROM sandbox_rel.library ORDER BY borrowed_date; -- check after delete
+
