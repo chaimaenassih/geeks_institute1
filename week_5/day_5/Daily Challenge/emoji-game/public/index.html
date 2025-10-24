@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Emoji Guessing Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+    header { display: flex; align-items: baseline; justify-content: space-between; }
+    .emoji { font-size: 4rem; margin: 1rem 0; }
+    form { display: grid; gap: .75rem; margin: 1rem 0; }
+    .options { display: grid; gap: .5rem; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem; }
+    .row { display: flex; gap: .75rem; align-items: center; }
+    .leaderboard table { width: 100%; border-collapse: collapse; }
+    .leaderboard th, .leaderboard td { border-bottom: 1px solid #eee; padding: .5rem .25rem; text-align: left; }
+    .muted { color: #777; }
+    button { padding: .6rem 1rem; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; cursor: pointer; }
+    input[type="text"] { padding: .5rem .6rem; border-radius: 8px; border: 1px solid #ccc; }
+    .feedback { font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Emoji Guessing Game</h1>
+    <div>Score: <span id="score">0</span></div>
+  </header>
+
+  <section class="card">
+    <div class="row">
+      <label class="muted">Player:</label>
+      <input id="player" type="text" placeholder="Your name" />
+      <button id="savePlayer">Save</button>
+    </div>
+    <div class="muted">Un pseudo est nécessaire pour le leaderboard.</div>
+  </section>
+
+  <section id="game" class="card" hidden>
+    <div class="emoji" id="emoji">😀</div>
+    <form id="guessForm">
+      <div class="options" id="options"></div>
+      <button type="submit">Submit guess</button>
+    </form>
+    <div class="feedback" id="feedback"></div>
+  </section>
+
+  <section class="card leaderboard">
+    <h2>Leaderboard (Top 10)</h2>
+    <table>
+      <thead><tr><th>Player</th><th>Score</th></tr></thead>
+      <tbody id="leaderboardBody"></tbody>
+    </table>
+  </section>
+
+  <script src="./app.js"></script>
+</body>
+</html>

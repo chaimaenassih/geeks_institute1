@@ -1,0 +1,28 @@
+// data/emojis.js
+module.exports = [
+  { emoji: '😀', name: 'Smile' },
+  { emoji: '😂', name: 'Laugh' },
+  { emoji: '🥲', name: 'Tearful Smile' },
+  { emoji: '😍', name: 'Heart Eyes' },
+  { emoji: '😎', name: 'Cool' },
+  { emoji: '🤔', name: 'Thinking' },
+  { emoji: '😴', name: 'Sleepy' },
+  { emoji: '😡', name: 'Angry' },
+  { emoji: '😭', name: 'Crying' },
+  { emoji: '🙄', name: 'Eye Roll' },
+  { emoji: '🐶', name: 'Dog' },
+  { emoji: '🐱', name: 'Cat' },
+  { emoji: '🦊', name: 'Fox' },
+  { emoji: '🐼', name: 'Panda' },
+  { emoji: '🦁', name: 'Lion' },
+  { emoji: '🍕', name: 'Pizza' },
+  { emoji: '🌮', name: 'Taco' },
+  { emoji: '🍔', name: 'Burger' },
+  { emoji: '🍣', name: 'Sushi' },
+  { emoji: '⚽', name: 'Soccer' },
+  { emoji: '🏀', name: 'Basketball' },
+  { emoji: '🎸', name: 'Guitar' },
+  { emoji: '🎧', name: 'Headphones' },
+  { emoji: '🚗', name: 'Car' },
+  { emoji: '✈️', name: 'Airplane' }
+];
