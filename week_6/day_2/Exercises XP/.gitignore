@@ -1,0 +1,5 @@
+Set-Content .gitignore @'
+node_modules/
+.env
+npm-debug.log*
+'@
