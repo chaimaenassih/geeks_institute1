@@ -1,0 +1,16 @@
+﻿{
+  "name": "task-management-api",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node ./src/server.js",
+    "dev": "set NODE_ENV=development&& node ./src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-validator": "^7.0.1",
+    "morgan": "^1.10.0",
+    "uuid": "^9.0.1"
+  }
+}
