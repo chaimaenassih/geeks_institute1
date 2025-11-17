@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 360px;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    form div {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 4px;
+      background: #007bff;
+      color: #ffffff;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    p {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Login</h1>
+
+    <form id="loginForm" action="/login" method="POST">
+      <div>
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" required />
+      </div>
+
+      <div>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required />
+      </div>
+
+      <button type="submit" id="loginBtn" disabled>Login</button>
+    </form>
+
+    <p>
+      Don’t have an account yet?
+      <a href="/register.html">Go to Register</a>
+    </p>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const inputs = form.querySelectorAll('input[required]');
+    const loginBtn = document.getElementById('loginBtn');
+
+    function checkInputs() {
+      const hasEmpty = Array.from(inputs).some(
+        (input) => !input.value.trim()
+      );
+      loginBtn.disabled = hasEmpty;
+    }
+
+    inputs.forEach((input) => {
+      input.addEventListener('input', checkInputs);
+    });
+
+    checkInputs();
+  </script>
+
+</body>
+</html>
