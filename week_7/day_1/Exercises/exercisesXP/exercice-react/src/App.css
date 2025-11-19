@@ -1,0 +1,38 @@
+.App {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  padding: 40px 0;
+  font-family: Arial, sans-serif;
+}
+
+
+.card {
+  max-width: 750px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 16px;
+  padding: 40px 80px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+
+h1,
+h3,
+h4,
+p {
+  margin: 8px 0;
+}
+
+
+a {
+  color: purple;
+}
+
+
+ul {
+  list-style-position: inside;
+  padding-left: 0;
+  margin: 8px 0 16px;
+}
