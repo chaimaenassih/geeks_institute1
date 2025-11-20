@@ -1,0 +1,19 @@
+.App {
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 30px;
+}
+
+.exercise {
+  margin-top: 20px;
+}
+
+.exercise h2 {
+  margin-bottom: 15px;
+}
+
+input,
+textarea,
+select,
+button {
+  margin-top: 5px;
+}
