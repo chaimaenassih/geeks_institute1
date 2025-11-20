@@ -1,0 +1,39 @@
+.App {
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 30px;
+}
+
+.exercise {
+  margin-bottom: 40px;
+}
+
+.card {
+  width: 320px;
+  padding: 30px;
+  border: 1px solid #ddd;
+  border-radius: 40px;
+  background-color: #ddd;
+  margin-top: 10px;
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.card p {
+  margin: 5px 0;
+}
+
+.card form {
+  margin-top: 10px;
+}
+
+.card input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card button {
+  margin-top: 10px;
+}
