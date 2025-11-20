@@ -1,0 +1,27 @@
+/* Largeur max du carousel */
+.container {
+  max-width: 900px;
+}
+
+/* Image principale */
+.carousel .slide img {
+  object-fit: cover;
+  height: 500px;
+}
+
+/* >>> Thumbnails centrés <<< */
+.carousel .thumbs-wrapper {
+  margin: 20px auto 0;      
+}
+
+.carousel .thumbs {
+  display: flex;
+  justify-content: center;  
+}
+
+/* Légende semi-transparente */
+.carousel .legend {
+  background: rgba(0, 0, 0, 0.4);
+  font-size: 1.1rem;
+  bottom: 40px;
+}
