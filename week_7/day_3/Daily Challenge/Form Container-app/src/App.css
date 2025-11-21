@@ -1,0 +1,102 @@
+/* Style global */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #fceff5; /* rose très léger */
+}
+
+h1 {
+  text-align: center;
+  margin-top: 20px;
+  color: #a63475; /* violet rosé */
+}
+
+/* Conteneur général */
+.form-container {
+  width: 70%;
+  max-width: 900px;
+  margin: 30px auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(166, 52, 117, 0.2);
+}
+
+/* Bandeau du haut */
+.form-container form h2 {
+  margin: -20px -20px 20px -20px;
+  padding: 12px 20px;
+  background-color: #a63475; /* violet féminin */
+  color: white;
+  font-size: 20px;
+  border-radius: 12px 12px 0 0;
+}
+
+/* Formulaire */
+.form-container form {
+  background-color: #ffe4f1; /* rose pastel */
+  padding: 20px;
+}
+
+/* Inputs */
+.form-container input[type="text"],
+.form-container input[type="number"],
+.form-container select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: 1px solid #c47aa3;
+  background-color: white;
+}
+
+.form-container input[type="radio"],
+.form-container input[type="checkbox"] {
+  margin-right: 6px;
+}
+
+/* Fieldset */
+.form-container fieldset {
+  margin-top: 10px;
+  border: none;
+  padding: 0;
+}
+
+.form-container legend {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #a63475;
+}
+
+/* Bouton */
+.form-container button[type="submit"] {
+  background-color: #a63475;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.form-container button[type="submit"]:hover {
+  background-color: #d1469e;
+}
+
+/* Résultats */
+.entered-info {
+  padding: 20px;
+  background-color: #6b2d55; /* prune foncé */
+  color: white;
+  border-top: 4px solid white;
+}
+
+.entered-info h2 {
+  margin-top: 0;
+  font-size: 22px;
+}
+
+.entered-info p {
+  margin: 5px 0;
+  font-size: 15px;
+}
