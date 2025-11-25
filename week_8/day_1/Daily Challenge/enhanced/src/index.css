@@ -1,0 +1,143 @@
+/* src/index.css */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f4f5fb;
+  color: #222;
+}
+
+/* Conteneur global */
+.app {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+}
+
+/* Carte principale */
+.task-manager {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Titre */
+.task-manager h1 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+/* Formulaire d'ajout */
+.add-task-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.add-task-form input[type="text"] {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #d4d4d8;
+}
+
+/* Boutons généraux */
+.btn {
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease,
+    color 0.1s ease, border-color 0.1s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.btn-secondary {
+  background: #e4e4e7;
+  color: #18181b;
+  border-color: #d4d4d8;
+}
+
+.btn-secondary:hover {
+  background: #d4d4d8;
+}
+
+/* Boutons de filtre */
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-btn {
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid #d4d4d8;
+  background: #f4f4f5;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.filter-btn-active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+/* Liste des tâches */
+.task-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #f4f4f5;
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-text {
+  flex: 1;
+  cursor: pointer;
+}
+
+.task-text-completed {
+  text-decoration: line-through;
+  color: #6b7280;
+}
+
+/* Boutons de chaque tâche */
+.task-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* Input d'édition */
+.task-edit-input {
+  flex: 1;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #d4d4d8;
+}
