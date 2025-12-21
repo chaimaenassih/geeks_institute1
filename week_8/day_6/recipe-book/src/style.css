@@ -1,0 +1,81 @@
+:root {
+  font-family: system-ui, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 30px;
+  background: #fafafa;
+}
+
+.recipe-app {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+#recipeEntryForm {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  background: white;
+}
+
+input, textarea, button {
+  font: inherit;
+}
+
+input, textarea {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+button {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  background: #f4f4f4;
+}
+
+#recipeContainer {
+  display: grid;
+  gap: 12px;
+}
+
+.recipe-card {
+  padding: 14px;
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
+  background: white;
+}
+
+.recipe-card[data-favorite="true"] {
+  border-color: #d7b100;
+}
+
+.recipe-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.recipe-card__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.recipe-card__details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.recipe-card__details ul {
+  margin-top: 6px;
+}
